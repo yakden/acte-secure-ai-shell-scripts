@@ -1,11 +1,33 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
 .venv/
 venv/
+env/
 .pytest_cache/
 *.egg-info/
+.eggs/
+build/
+dist/
+
+# OS
 .DS_Store
-# Word/PDF previews auto-generated from markdown
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+
+# Auto-generated previews of markdown docs (the .md sources are committed)
 data/PROVENANCE.pdf
 data/PROVENANCE.docx
+
+# Internal platform artifacts (not part of the project)
+.abacus.donotdelete
+
+# NOTE: the compiled paper (paper/*.pdf, paper/*.html) and all experiment
+# figures (experiments/figures/*.png, paper/figures/*.png) ARE committed
+# deliberately and must not be ignored.

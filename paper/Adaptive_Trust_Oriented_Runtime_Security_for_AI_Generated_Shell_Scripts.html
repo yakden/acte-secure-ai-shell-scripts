@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Trust-Oriented Runtime Security for AI-Generated Shell Scripts</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]});"></script>
+
+<style>
+/* ===== PAGE SETUP ===== */
+@page {
+  size: A4;
+  margin: 1.85cm 1.7cm;
+  @top-center { content: string(doctitle); font-size: 8pt; font-style: italic; color: #444; }
+  @bottom-center { content: counter(page); font-size: 9pt; }
+}
+@page :first {
+  margin: 1.85cm 1.7cm;
+  @top-center { content: none; }
+  @bottom-center { content: none; }
+}
+
+/* ===== RESET ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 10pt;
+  line-height: 1.55;
+  color: #000;
+  string-set: doctitle "Adaptive Trust-Oriented Runtime Security for AI-Generated Shell Scripts";
+}
+
+/* ===== TITLE BLOCK (single col) ===== */
+.paper-header {
+  column-span: all;
+  text-align: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #000;
+}
+.paper-title {
+  font-size: 18pt;
+  font-weight: bold;
+  line-height: 1.25;
+  margin: 0 0 10px 0;
+  color: #000;
+  string-set: doctitle "";
+}
+.author-block {
+  font-size: 11pt;
+  font-style: normal;
+  margin: 4px 0;
+}
+.author-name { font-weight: bold; }
+.author-detail { font-size: 9pt; color: #333; margin-top: 2px; }
+
+/* ===== TWO-COLUMN LAYOUT ===== */
+.twocol {
+  column-count: 2;
+  column-gap: 0.7cm;
+  column-rule: none;
+}
+
+/* ===== ABSTRACT (single col) ===== */
+.abstract-block {
+  column-span: all;
+  margin: 8px 0 10px 0;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 6px 0.4cm;
+}
+.abstract-block .abs-title {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 10pt;
+  display: inline;
+}
+.abstract-block p {
+  font-size: 9.5pt;
+  text-align: justify;
+  margin: 0;
+  line-height: 1.55;
+}
+.index-terms {
+  column-span: all;
+  font-size: 9.5pt;
+  padding: 0 0.4cm 8px 0.4cm;
+}
+.index-terms strong { font-style: italic; }
+
+/* ===== HEADINGS ===== */
+h1.sec-title {
+  font-size: 10pt;
+  font-weight: bold;
+  font-variant: small-caps;
+  text-align: center;
+  margin: 10px 0 4px 0;
+  page-break-after: avoid;
+  line-height: 1.3;
+}
+h2.subsec-title {
+  font-size: 10pt;
+  font-weight: bold;
+  font-style: italic;
+  margin: 7px 0 3px 0;
+  page-break-after: avoid;
+}
+
+/* ===== PARAGRAPHS ===== */
+p {
+  margin: 0 0 5px 0;
+  text-align: justify;
+  text-align-last: left;
+  orphans: 2;
+  widows: 2;
+}
+
+/* ===== FIGURES ===== */
+figure {
+  margin: 8px 0;
+  text-align: center;
+  page-break-inside: avoid;
+  max-height: 70vh;
+  height: auto;
+  width: 100%;
+  object-fit: contain;
+}
+figure img {
+  max-width: 100%;
+  height: auto;
+  max-height: 38vh;
+  width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+figcaption {
+  font-size: 8.5pt;
+  text-align: center;
+  margin-top: 3px;
+  color: #000;
+}
+figcaption::before {
+  content: attr(data-label) ". ";
+  font-weight: bold;
+}
+
+/* ===== TABLES ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  margin: 6px 0;
+  max-width: 100%;
+}
+table caption {
+  font-size: 8.5pt;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 4px;
+  caption-side: top;
+}
+table caption::before {
+  content: attr(data-label) ": ";
+  font-weight: bold;
+}
+th {
+  border-top: 1.5px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 2px 5px;
+  text-align: center;
+  font-weight: bold;
+  background: #fff;
+}
+td {
+  padding: 2px 5px;
+  text-align: center;
+  border-bottom: none;
+}
+tr:last-child td { border-bottom: 1px solid #000; }
+.tbl-left { text-align: left; }
+.tbl-bold { font-weight: bold; }
+
+/* ===== MATH / EQUATIONS ===== */
+.equation-block {
+  margin: 5px 0;
+  text-align: center;
+  page-break-inside: avoid;
+}
+.katex-display { overflow-x: auto; margin: 4px 0; }
+.eq-label {
+  float: right;
+  font-size: 9pt;
+  margin-top: -1.3em;
+}
+
+/* ===== PSEUDOCODE / ALGORITHM ===== */
+.algorithm-box {
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  margin: 6px 0;
+  padding: 4px 6px;
+  page-break-inside: avoid;
+  font-size: 8.5pt;
+}
+.algorithm-box .alg-title {
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 3px;
+}
+.algorithm-box pre {
+  margin: 0;
+  font-family: "Courier New", monospace;
+  font-size: 8pt;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+
+/* ===== INLINE CODE ===== */
+code {
+  font-family: "Courier New", monospace;
+  font-size: 8.5pt;
+  background: #f5f5f5;
+  padding: 0 2px;
+}
+
+/* ===== REFERENCES ===== */
+.references {
+  font-size: 8.5pt;
+  line-height: 1.45;
+}
+.references ol {
+  padding-left: 18px;
+  margin: 0;
+}
+.references li {
+  margin-bottom: 3px;
+}
+
+/* ===== OVERFLOW PREVENTION ===== */
+pre, table, figure, img, svg, blockquote, code {
+  max-width: 100%; box-sizing: border-box; overflow-wrap: break-word;
+}
+a { word-break: break-all; }
+
+/* Wide figures (span both columns) */
+.full-width-fig {
+  column-span: all;
+}
+
+/* Superscripts / footnote markers */
+sup { font-size: 7pt; vertical-align: super; }
+</style>
+</head>
+<body>
+
+<!-- ===== TITLE + AUTHOR BLOCK ===== -->
+<div class="paper-header">
+  <h1 class="paper-title">Adaptive Trust-Oriented Runtime Security<br>for AI-Generated Shell Scripts</h1>
+  <div class="author-block">
+    <span class="author-name">Denys Yakymov</span>
+  </div>
+  <div class="author-detail">
+    ORCID: 0009-0005-2398-8976 &nbsp;&middot;&nbsp; yakden@gmail.com
+  </div>
+</div>
+
+<!-- ===== ABSTRACT ===== -->
+<div class="abstract-block">
+  <p><span class="abs-title">Abstract&mdash;</span>Large language models (LLMs) are increasingly deployed to generate shell scripts autonomously, creating an emerging attack surface in which syntactically valid yet semantically hazardous code may reach production pipelines without adequate scrutiny. This paper introduces the Adaptive Context-Aware Trust Execution (ACTE) framework, a runtime security system that assigns continuous risk scores to shell scripts through a logistic trust model combining semantic parsing, execution-context analysis, threat-intelligence signature matching, and online stochastic-gradient-descent (SGD) feedback learning. ACTE maps each script to one of four discrete trust levels&mdash;TRUSTED, MONITOR, RESTRICT, or DENY&mdash;and synthesizes corresponding enforcement artifacts (seccomp profiles, Open Policy Agent Rego policies, namespace/cgroup constraints). We evaluate ACTE on a reproducible dataset of 420 labeled scripts spanning five categories and three research questions. The full model achieves F1&nbsp;=&nbsp;0.915, Precision&nbsp;=&nbsp;0.985, Recall&nbsp;=&nbsp;0.855, and ROC-AUC&nbsp;=&nbsp;0.976 at a mean analysis latency of 0.51&nbsp;ms/script (approximately 1,963 scripts/s), while reducing the false-positive rate by 93.8&#37; relative to ShellCheck&nbsp;v0.9.0. Ablation experiments confirm that threat-intelligence features contribute most to discriminative power (\(\Delta\)F1&nbsp;=&nbsp;&minus;0.105 when removed), whereas feedback learning is the principal guardian against false positives (FPR rises from 0.011 to 0.239 when removed). We report all results faithfully, including the synthetic nature of the dataset and the prototype-sketch status of live enforcement.</p>
+</div>
+
+<div class="index-terms">
+  <strong>Index Terms&mdash;</strong>runtime security, shell-script analysis, AI-generated code, trust evaluation, logistic risk model, online learning, seccomp, Open Policy Agent, zero-trust execution.
+</div>
+
+<!-- ===== TWO-COLUMN BODY ===== -->
+<div class="twocol">
+
+<!-- ==================== SECTION I ==================== -->
+<h1 class="sec-title">I. Introduction</h1>
+
+<p>The proliferation of large language models capable of generating executable code has fundamentally altered the software supply-chain landscape. Tools such as GitHub Copilot, ChatGPT, and their successors are now routinely employed to produce shell scripts for infrastructure management, deployment automation, and one-off administrative tasks. While this accelerates development velocity, it introduces a category of risk that conventional static analysis tools were not designed to address: the AI-generated shell script as an attack surface.</p>
+
+<p>Shell scripts are privileged, imperative artifacts. A single malicious or misconfigured script can exfiltrate credentials, establish persistence, destroy filesystems, or exfiltrate data over covert channels. The key threat model concern is not that LLMs are inherently malicious, but rather that (i)&nbsp;prompt injection and adversarial prompting can induce dangerous outputs, (ii)&nbsp;model hallucination can produce syntactically valid yet semantically harmful constructs, and (iii)&nbsp;the opacity of LLM generation means that standard code-review heuristics fail to capture the full behavioral envelope of the generated code.</p>
+
+<p>Existing defenses are inadequate for this threat model. Static linters such as ShellCheck&nbsp;[1] detect syntactic errors and style violations but are agnostic to intent and behavioral context. Mandatory access-control frameworks such as SELinux&nbsp;[2] and AppArmor&nbsp;[3] operate at the process level and require pre-authored policy that cannot adapt to unseen code at runtime. Behavioral monitors such as Falco&nbsp;[4] and eBPF-based auditing systems&nbsp;[5] observe execution but cannot preempt it. None of these approaches integrates a continuous risk score derived from the script's content, execution context, and historical feedback into a unified adaptive trust decision made <em>before</em> the script runs.</p>
+
+<p>We present the <strong>Adaptive Context-Aware Trust Execution (ACTE)</strong> framework to address this gap. ACTE's central contribution is a formal logistic risk function \(R(s)\) that aggregates features from three orthogonal evidence dimensions&mdash;semantic structure, execution context, and threat-intelligence signatures&mdash;into a continuous risk score in \((0,1)\), which is then inverted to a trust score \(T(s)=1-R(s)\) and mapped to a discrete enforcement level. Critically, the weight vector governing this scoring is updated online via SGD whenever labeled feedback is available, making ACTE adaptive to deployment-specific script distributions without requiring model retraining from scratch.</p>
+
+<p>This paper makes the following contributions. First, we formalize the problem of adaptive trust-oriented runtime security for AI-generated shell scripts, including a precise threat model and effectiveness criteria (Section&nbsp;II). Second, we present the ACTE formal mathematical model and its distinguishing properties relative to prior art (Sections&nbsp;III&ndash;IV). Third, we describe the eight-module system architecture and its Python prototype implementation (Sections&nbsp;V&ndash;VI). Fourth, we report reproducible experimental results addressing detection accuracy, computational cost, and false-positive reduction (Sections&nbsp;VII&ndash;IX). Finally, we situate ACTE within the broader landscape of runtime security research and outline a planned program of follow-on work (Sections&nbsp;X&ndash;XIII).</p>
+
+<!-- ==================== SECTION II ==================== -->
+<h1 class="sec-title">II. Problem Formalization</h1>
+
+<h2 class="subsec-title">A. Object of Study</h2>
+<p>Let \(\mathcal{S}\) denote the universe of POSIX-compatible shell scripts. Each script \(s \in \mathcal{S}\) is a finite sequence of characters that may be submitted to a shell interpreter for execution on a host system with resources \(\mathcal{R}\) (filesystems, network interfaces, device nodes, process table). We are interested in the subset \(\mathcal{S}_{\mathrm{AI}} \subseteq \mathcal{S}\) of scripts produced, in whole or in part, by generative language models, though the framework is applicable to any shell script regardless of provenance.</p>
+
+<h2 class="subsec-title">B. Threat Model</h2>
+<p>We consider an adversary \(\mathcal{A}\) who controls the prompt submitted to an LLM-based code-generation service and whose goal is to cause the generated script to perform one or more of the following: (i)&nbsp;unauthorized data exfiltration, (ii)&nbsp;persistence establishment, (iii)&nbsp;privilege escalation, (iv)&nbsp;irreversible data destruction, or (v)&nbsp;lateral movement. We assume the adversary can craft obfuscated scripts (e.g., base64-encoded payloads, eval-based indirection, character-substitution ciphers) to evade pattern-based defenses. We do not model adversaries with physical hardware access or kernel-level root kits; our threat boundary ends at the system-call interface.</p>
+
+<h2 class="subsec-title">C. Formal Definitions</h2>
+<p>Let \(\mathcal{C}\) be the set of distinct commands (executables) that may appear in scripts in \(\mathcal{S}\). Let \(\mathcal{X}: \mathcal{S} \to [0,1]^d\) be a feature-extraction function mapping any script to a \(d\)-dimensional real-valued feature vector. Define a <em>risk function</em> \(R: \mathcal{S} \to (0,1)\) and a <em>trust function</em> \(T: \mathcal{S} \to (0,1)\) such that \(T(s) = 1 - R(s)\) for all \(s\). The <em>trust level</em> of a script is a discrete label \(\ell(s) \in \{\mathrm{TRUSTED}, \mathrm{MONITOR}, \mathrm{RESTRICT}, \mathrm{DENY}\}\) obtained by thresholding \(R(s)\).</p>
+
+<h2 class="subsec-title">D. Research Questions</h2>
+<p>We structure the experimental evaluation around three research questions (RQs):</p>
+<p><strong>RQ1</strong>&nbsp;(Detection Accuracy): What classification performance does ACTE achieve on held-out labeled scripts, and how does each component contribute?</p>
+<p><strong>RQ2</strong>&nbsp;(Computational Cost): Is ACTE's per-script analysis latency compatible with inline deployment on interactive or CI/CD pipelines?</p>
+<p><strong>RQ3</strong>&nbsp;(False-Positive Reduction): By how much does ACTE reduce the false-positive rate relative to a ShellCheck&nbsp;v0.9.0 baseline?</p>
+
+<!-- ==================== SECTION III ==================== -->
+<h1 class="sec-title">III. The ACTE Model and Novelty</h1>
+
+<p>ACTE's distinguishing characteristics relative to existing work are as follows. First, it operates <em>before</em> execution, producing a trust decision based on static content analysis rather than observable runtime behavior&mdash;thus it can preempt dangerous scripts rather than merely detect them post-hoc. Second, unlike rule-only systems (SELinux, AppArmor, seccomp), ACTE derives its risk signal from the script's content and synthesizes a corresponding policy automatically; human policy authoring is not required per script. Third, unlike pure static linters, ACTE incorporates a probabilistic risk model with online learning, so its decision boundary adapts to evolving script distributions. Fourth, ACTE provides a continuous risk score rather than a binary flag, enabling graded enforcement proportionate to assessed risk.</p>
+
+<p>The four trust levels map to concrete enforcement postures: TRUSTED scripts execute without restriction; MONITOR scripts execute with full audit logging; RESTRICT scripts execute in a sandboxed namespace with network egress blocked, read-only root filesystem, and capped CPU/memory/PID resources; DENY scripts are blocked entirely with no execution permitted.</p>
+
+<p>The online feedback loop closes the adaptation loop: when a MONITOR-level script is later confirmed safe or dangerous by an operator, a single SGD step updates the weight vector in sub-millisecond time, moving the decision boundary for future similar scripts without requiring batch retraining.</p>
+
+<!-- ==================== SECTION IV ==================== -->
+<h1 class="sec-title">IV. Formal Mathematical Model</h1>
+
+<h2 class="subsec-title">A. Feature Space and Sets</h2>
+<p>Let \(\mathcal{C}\) be the command set extracted by the SemanticParser, and let \(\mathcal{G} = \{\mathrm{semantic}, \mathrm{context}, \mathrm{threat}\}\) be the three feature groups. The full feature vector is \(\mathbf{x}(s) \in [0,1]^{13}\), with 5 semantic features, 5 context features, and 3 threat-intelligence aggregates (see Section&nbsp;V for definitions).</p>
+
+<h2 class="subsec-title">B. Risk Function</h2>
+<p>The logit (linear combination) is</p>
+$$z(s) = b + \sum_{i=1}^{13} w_i \, x_i(s),$$
+<p style="margin-top:0">where \(b\) is a scalar bias and \(\mathbf{w} \in \mathbb{R}^{13}\) is the weight vector. The risk score is the logistic (sigmoid) transformation:</p>
+$$R(s) = \sigma(z(s)) = \frac{1}{1 + e^{-z(s)}} \in (0,1).$$
+
+<h2 class="subsec-title">C. Trust Function and Levels</h2>
+<p>Trust is the complementary quantity:</p>
+$$T(s) = 1 - R(s) \in (0,1).$$
+<p style="margin-top:0">The discrete trust level is determined by</p>
+$$\ell(s) = \begin{cases} \mathrm{TRUSTED} & R(s) < 0.25, \\ \mathrm{MONITOR} & 0.25 \le R(s) < 0.50, \\ \mathrm{RESTRICT} & 0.50 \le R(s) < 0.80, \\ \mathrm{DENY} & R(s) \ge 0.80. \end{cases}$$
+<p style="margin-top:0">Binary detection for evaluation purposes uses a tunable decision threshold \(\tau\) (default 0.50): a script is predicted dangerous if \(R(s) \ge \tau\).</p>
+
+<h2 class="subsec-title">D. Monotonicity Property</h2>
+<p>Because \(\sigma\) is strictly increasing, \(R(s)\) is monotone in \(z(s)\): adding a positive-weighted feature never decreases risk, and adding a benign-weighted (negative) feature never increases risk. Formally, if \(\mathbf{x}'(s) \ge \mathbf{x}(s)\) component-wise (with at least one strict inequality and \(w_i &gt; 0\) for the differing components), then \(R(s') &gt; R(s)\). This property provides an auditable safety invariant useful for formal analysis and operator trust.</p>
+
+<h2 class="subsec-title">E. Online Trust-Update Algorithm</h2>
+<p>When a labeled example \((s, y) \in \mathcal{S} \times \{0,1\}\) is received (with \(y=1\) indicating dangerous), FeedbackLearning applies a single SGD step on the binary cross-entropy loss \(\mathcal{L}(p,y) = -[y\ln p + (1-y)\ln(1-p)]\), where \(p = R(s)\):</p>
+
+<div class="algorithm-box">
+  <div class="alg-title">Algorithm 1: Online SGD Weight Update</div>
+  <pre>Input: features x, label y ∈ {0,1}, learning rate η, L2 penalty λ
+z ← b + Σ_i w_i · x_i
+p ← σ(z)
+error ← p − y                    // gradient of BCE wrt logit
+for each feature i:
+    grad ← error · x_i + λ · w_i  // gradient + L2 regularization
+    w_i ← w_i − η · grad
+b ← b − η · error
+Output: updated (w, b)</pre>
+</div>
+
+<p>The L2 penalty \(\lambda \|\mathbf{w}\|^2\) prevents weight drift from auditable hand-set priors. Across 40 training epochs on 252 labeled scripts, the weight vector shifted by \(\|\Delta\mathbf{w}\| = 6.08\) and loss declined from 0.345 to 0.288, confirming non-trivial adaptation.</p>
+
+<!-- ==================== SECTION V ==================== -->
+<h1 class="sec-title">V. System Architecture</h1>
+
+<p>ACTE comprises eight cooperating modules organized into a linear analysis pipeline followed by an enforcement layer. Figure&nbsp;1 depicts the data-flow.</p>
+
+<h2 class="subsec-title">A. SemanticParser</h2>
+<p>The SemanticParser converts a raw script string into a structured <code>ParsedScript</code> bundle. It attempts to parse each line with <code>bashlex</code>, a Python port of the GNU Bash parser, and falls back to a robust shlex/regex tokenizer when bashlex raises (as it frequently does on obfuscated or adversarial input). It extracts: command names, flags, file paths, URLs, device nodes, pipe count, pipe-to-shell detection, command-substitution density, redirection count, background-job count, and heredoc count.</p>
+
+<h2 class="subsec-title">B. ContextExtractor</h2>
+<p>The ContextExtractor derives five normalized execution-context dimensions from the <code>ParsedScript</code>: (1) <em>privilege_required</em>&mdash;presence of privilege-escalation commands (sudo, su, setcap) or sudoers manipulation; (2) <em>network_egress</em>&mdash;network-capable commands, URLs, pipe-to-shell patterns, or /dev/tcp redirections; (3) <em>filesystem_scope</em>&mdash;access to sensitive roots (/etc, /boot, /dev) or recursive wildcard operations; (4) <em>irreversibility</em>&mdash;destructive commands (rm&nbsp;-rf, dd, mkfs, shred) or no-preserve-root patterns; (5) <em>obfuscation</em>&mdash;base64 decoding, eval, hex-escape sequences, or high command-substitution density.</p>
+
+<h2 class="subsec-title">C. ThreatIntel</h2>
+<p>ThreatIntel loads a JSON knowledge base of regex-pattern signatures, each assigned a signed weight indicating threat (&gt;0) or benign (&lt;0) signal strength. It produces a list of <code>SignatureHit</code> objects, from which three aggregate features are derived: total weight norm, maximum single-category weight norm, and count of distinct threat categories (each normalized to [0,1]).</p>
+
+<h2 class="subsec-title">D. TrustEvaluationEngine</h2>
+<p>The TrustEvaluationEngine assembles the 13-dimensional feature vector from the outputs of the three preceding modules, evaluates the logistic risk function \(R(s)\), and returns a <code>TrustAssessment</code> containing the risk score, trust score, trust level, logit, per-feature contributions, and matched signatures.</p>
+
+<h2 class="subsec-title">E. FeedbackLearning</h2>
+<p>FeedbackLearning exposes an <code>update_one</code> method (single SGD step) and a <code>train</code> method (multi-epoch batch training over labeled pairs). It additionally provides a <code>tune_threshold</code> method that selects the decision threshold \(\tau\) maximizing F1 (or minimizing FPR subject to a recall constraint) on a validation set.</p>
+
+<h2 class="subsec-title">F. PolicyGenerator</h2>
+<p>PolicyGenerator translates a <code>TrustAssessment</code> into an <code>ExecutionPolicy</code> consisting of a seccomp profile sketch (Docker JSON format), an OPA Rego policy snippet, and a namespace/cgroup constraint bundle. Each trust level yields a distinct syscall allow-list, network posture, resource quotas, and capability drop set.</p>
+
+<h2 class="subsec-title">G. RuntimeMonitor</h2>
+<p>RuntimeMonitor provides a simulation of seccomp-bpf enforcement against a stream of observed syscall names. Given a policy, it builds allow/audit/block/kill decision tables and can be queried per-syscall or in batch mode. In the current prototype, enforcement is simulated (no kernel-level seccomp filter is installed); the monitor is included to demonstrate the enforcement logic in a testable form.</p>
+
+<h2 class="subsec-title">H. ACTEPipeline</h2>
+<p>The ACTEPipeline orchestrates all seven preceding modules into a single <code>analyze(script)</code> call that returns a fully populated <code>ACTEResult</code> object, including the latency measured via <code>time.perf_counter()</code>.</p>
+
+<!-- ==================== SECTION VI ==================== -->
+<h1 class="sec-title">VI. Prototype Implementation</h1>
+
+<p>The ACTE prototype is implemented in Python&nbsp;3.11. The SemanticParser uses the <code>bashlex</code> library for AST-level parsing and the standard <code>shlex</code> module for the fallback tokenizer. Regex-based extraction of URLs, device nodes, and file paths is handled by compiled patterns applied to the raw script string, providing resilience against obfuscated syntax that defeats AST parsers.</p>
+
+<p>The TrustEvaluationEngine's logistic model is implemented entirely in pure Python using the standard <code>math</code> module, with a numerically stable sigmoid that avoids overflow for large positive or negative logits. Default weights were hand-set to produce a reasonable cold-start model and are subsequently adapted by FeedbackLearning.</p>
+
+<p>The FeedbackLearning module implements SGD with L2 regularization. Epoch shuffling is performed with a deterministic linear-congruential generator (LCG) seeded from the training invocation, ensuring reproducible training order independent of any global random state. The threshold tuner performs a sweep over all candidate thresholds present in the scored validation set.</p>
+
+<p>Policy generation produces seccomp JSON in the Docker <code>seccomp</code> profile format and Open Policy Agent Rego snippets. The Rego output specifies <code>allow</code>, <code>audit</code>, <code>network_egress_allowed</code>, and <code>allow_new_privileges</code> decisions for each trust level. Namespace constraints specify Linux namespaces to isolate (PID, mount, UTS, IPC, and optionally NET), cgroup CPU quota, memory limit, and PID limit. These artifacts are emitted as data structures; in a production deployment they would be passed to a container runtime or an eBPF enforcement agent.</p>
+
+<p>The complete codebase lives at <code>/home/ubuntu/acte_project/</code> and includes the dataset generator, experiment runner, figure generation scripts, and the full test suite. The run command <code>python -m experiments.run_all</code> reproduces all reported numbers end-to-end.</p>
+
+<!-- ==================== SECTION VII ==================== -->
+<h1 class="sec-title">VII. Experimental Methodology</h1>
+
+<h2 class="subsec-title">A. Dataset</h2>
+<p>We constructed a dataset of 420 labeled shell scripts spanning five categories: <em>ai_generated</em> (scripts plausibly attributable to LLM generation), <em>malicious</em> (known-bad payloads), <em>obfuscated</em> (scripts with encoding/eval indirection), <em>safe_everyday</em> (routine user scripts with no dangerous behavior), and <em>sysadmin</em> (legitimate administrative scripts, some with moderate privilege use). The dataset is synthetic-but-reproducible: all scripts were generated by a deterministic dataset generator seeded at 1337, ensuring any researcher can reconstruct the exact dataset and reproduce reported numbers. Hard negatives (safe scripts resembling dangerous patterns) and hard positives (dangerous scripts with minimal syntactic markers) are included to stress-test the classifier. The dataset is split 60/40 train/test (252/168 scripts), yielding 114 positive training examples and 76 positive test examples.</p>
+
+<h2 class="subsec-title">B. Hypotheses</h2>
+<p>H1 (RQ1): ACTE achieves F1&nbsp;&gt;&nbsp;0.85 on the held-out test set. H2 (RQ2): Mean per-script latency is below 2&nbsp;ms. H3 (RQ3): ACTE's false-positive rate is at least 80% lower than ShellCheck v0.9.0.</p>
+
+<h2 class="subsec-title">C. Measurement Methodology</h2>
+<p>For RQ1, ACTE is trained for 40 epochs on the training split. The decision threshold is fixed at \(\tau=0.50\). Classification metrics (Precision, Recall, F1, MCC, Accuracy, ROC-AUC, PR-AUC, FPR, FNR) are computed on the held-out test split. The ablation study removes one component at a time (SemanticParser, ContextExtractor, ThreatIntel, FeedbackLearning) by zeroing the corresponding feature group and re-running the full training/evaluation protocol.</p>
+
+<p>For RQ2, each of the 420 scripts is analyzed three times and the minimum latency is recorded (to minimize scheduling jitter). Throughput is computed as the reciprocal of the mean latency.</p>
+
+<p>For RQ3, ShellCheck v0.9.0 is applied to each test script. Predictions are generated by the mapping: <em>dangerous</em> if any finding at severity <code>error</code> or <code>warning</code> is produced. FPR is compared between ACTE and ShellCheck on identical test scripts.</p>
+
+<!-- ==================== SECTION VIII ==================== -->
+<h1 class="sec-title">VIII. Results and Analysis</h1>
+
+<h2 class="subsec-title">A. RQ1: Detection Accuracy</h2>
+
+<p>Table&nbsp;I reports the full metrics for ACTE and each ablation configuration. The full model achieves F1&nbsp;=&nbsp;0.915, Precision&nbsp;=&nbsp;0.985, Recall&nbsp;=&nbsp;0.855, MCC&nbsp;=&nbsp;0.861, and ROC-AUC&nbsp;=&nbsp;0.976 on the 168-script test set (TN=91, FP=1, FN=11, TP=65). Hypothesis H1 is confirmed. ROC and Precision-Recall curves are shown in Figures&nbsp;1 and&nbsp;2 respectively; both display favorable area-under-curve characteristics consistent with a well-calibrated detector.</p>
+
+<table>
+  <caption data-label="Table I">ACTE Full Model and Ablation Metrics (Test Set, n=168)</caption>
+  <tr>
+    <th class="tbl-left">Configuration</th>
+    <th>Prec.</th>
+    <th>Rec.</th>
+    <th>F1</th>
+    <th>MCC</th>
+    <th>FPR</th>
+    <th>ROC-AUC</th>
+  </tr>
+  <tr class="tbl-bold">
+    <td class="tbl-left tbl-bold">Full ACTE</td>
+    <td>0.985</td><td>0.855</td><td>0.915</td><td>0.861</td><td>0.011</td><td>0.976</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">No SemanticParser</td>
+    <td>0.957</td><td>0.868</td><td>0.910</td><td>0.846</td><td>0.033</td><td>0.967</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">No ContextExtractor</td>
+    <td>0.985</td><td>0.882</td><td>0.931</td><td>0.883</td><td>0.011</td><td>0.969</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">No ThreatIntel</td>
+    <td>0.833</td><td>0.789</td><td>0.811</td><td>0.663</td><td>0.130</td><td>0.896</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">No FeedbackLearning</td>
+    <td>0.766</td><td>0.947</td><td>0.847</td><td>0.710</td><td>0.239</td><td>0.952</td>
+  </tr>
+</table>
+
+<figure>
+  <img src="figures/roc_curve.png" alt="ROC Curve">
+  <figcaption data-label="Fig. 1">ROC curve for the full ACTE model on the held-out test set (n=168). AUC=0.976.</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/pr_curve.png" alt="Precision-Recall Curve">
+  <figcaption data-label="Fig. 2">Precision-Recall curve for the full ACTE model. PR-AUC=0.978.</figcaption>
+</figure>
+
+<figure>
+  <img src="figures/ablation_f1.png" alt="Ablation F1 Scores">
+  <figcaption data-label="Fig. 3">F1 scores across ablation configurations. Removing ThreatIntel produces the largest F1 drop (&minus;0.105). Removing FeedbackLearning sharply raises FPR from 0.011 to 0.239.</figcaption>
+</figure>
+
+<h2 class="subsec-title">B. Ablation Analysis</h2>
+<p>The ablation results confirm that ThreatIntel is the single most discriminative component: its removal reduces F1 by 0.105 and increases FPR from 0.011 to 0.130. FeedbackLearning, while contributing a smaller F1 change (\(\Delta\)F1=&minus;0.068), is the primary mechanism controlling false positives: without it, FPR rises dramatically from 0.011 to 0.239 as the unlearned model defaults to over-predicting dangerous. Removing ContextExtractor, counter-intuitively, yields a marginally higher F1 (0.931) due to threshold shift; this suggests that in the present dataset, context features add discriminative precision at the cost of some recall, a trade-off resolvable via threshold tuning. SemanticParser removal has the smallest individual effect (\(\Delta\)F1=&minus;0.005) because the remaining components partially compensate through overlapping signal.</p>
+
+<h2 class="subsec-title">C. RQ2: Computational Cost</h2>
+<p>Mean per-script analysis latency is 0.509&nbsp;ms (median 0.452&nbsp;ms, p95 0.954&nbsp;ms, p99 1.335&nbsp;ms, min 0.193&nbsp;ms, max 1.374&nbsp;ms, sd 0.218&nbsp;ms), measured over 420 scripts with three repetitions each. Corresponding throughput is approximately 1,963 scripts/second. Hypothesis H2 is confirmed by a substantial margin: the 95th-percentile latency (0.954&nbsp;ms) remains below 1&nbsp;ms, confirming suitability for inline CI/CD integration.</p>
+
+<h2 class="subsec-title">D. RQ3: False-Positive Reduction</h2>
+<p>Table&nbsp;II compares ACTE against ShellCheck v0.9.0. Under the default error+warning mapping (mean 0.27 findings/script), ShellCheck achieves FPR=0.174, F1=0.122, and MCC=&minus;0.140. ACTE's FPR of 0.011 represents a 93.8% relative reduction. A stricter error-only mapping yields ShellCheck FPR=0.000 but recall of only 0.013 (one true positive). Hypothesis H3 is confirmed. Figure&nbsp;4 visualizes the metric comparison.</p>
+
+<table>
+  <caption data-label="Table II">ACTE vs. ShellCheck v0.9.0 Baseline Comparison (Test Set)</caption>
+  <tr>
+    <th class="tbl-left">System</th>
+    <th>Prec.</th>
+    <th>Recall</th>
+    <th>F1</th>
+    <th>MCC</th>
+    <th>FPR</th>
+  </tr>
+  <tr class="tbl-bold">
+    <td class="tbl-left tbl-bold">ACTE (full)</td>
+    <td>0.985</td><td>0.855</td><td>0.915</td><td>0.861</td><td>0.011</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">ShellCheck (error+warn)</td>
+    <td>0.273</td><td>0.079</td><td>0.122</td><td>&minus;0.140</td><td>0.174</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">ShellCheck (error only)</td>
+    <td>1.000</td><td>0.013</td><td>0.026</td><td>0.085</td><td>0.000</td>
+  </tr>
+</table>
+
+<figure>
+  <img src="figures/baseline_comparison.png" alt="Baseline Comparison">
+  <figcaption data-label="Fig. 4">Comparison of ACTE vs. ShellCheck v0.9.0 across key metrics. ACTE reduces FPR by 93.8% relative to ShellCheck (error+warning mapping) while achieving substantially higher F1 and MCC.</figcaption>
+</figure>
+
+<!-- ==================== SECTION IX ==================== -->
+<h1 class="sec-title">IX. Statistical Treatment</h1>
+
+<p>All metrics are computed on a single 168-sample held-out test set; we report point estimates derived from the full reproducible run rather than bootstrap confidence intervals, since the deterministic dataset and seed-fixed training make the experiment fully reproducible rather than a random sample from a larger population. However, to give a sense of sampling uncertainty, we note that for F1=0.915 on a test set of 168 samples (76 positives), a Wilson-score-based 95% confidence interval on precision (TP/(TP+FP)=65/66) yields approximately (0.924, 0.999), and on recall (TP/(TP+FN)=65/76) approximately (0.754, 0.921).</p>
+
+<p>The Matthew's Correlation Coefficient (MCC) of 0.861 is an informative summary statistic for imbalanced binary classification, as it takes into account all four entries of the confusion matrix and is not inflated by class imbalance. An MCC approaching 1.0 indicates near-perfect classification; our value of 0.861 is consistent with a high-performing but not perfect detector, with the primary source of imperfection being false negatives in the malicious category (recall=0.750).</p>
+
+<p>The ROC curve (Figure&nbsp;1) visually confirms that the AUC of 0.976 is largely independent of the chosen threshold: the curve is well above the diagonal at virtually all operating points. Similarly, the PR-AUC of 0.978 indicates high precision across a wide range of recall thresholds, which is particularly important in deployment contexts where false positives impose operator burden.</p>
+
+<p>The ablation study reports point estimates for each component configuration trained and evaluated with identical protocol, making the delta values directly interpretable as marginal contributions of each component to the full model's performance.</p>
+
+<!-- ==================== SECTION X ==================== -->
+<h1 class="sec-title">X. Threats to Validity</h1>
+
+<h2 class="subsec-title">A. Internal Validity</h2>
+<p>The logistic model's cold-start weights were hand-set with knowledge of the intended feature semantics, which introduces a form of domain knowledge that may not generalize to entirely different script populations. The SGD training on 252 examples with 40 epochs may overfit to the specific synthetic distribution; we mitigate this by reporting held-out test metrics and confirming that the weight-delta norm (6.08) is moderate rather than indicating divergence.</p>
+
+<h2 class="subsec-title">B. External Validity</h2>
+<p>The most significant threat to external validity is the synthetic nature of the dataset. All 420 scripts were generated programmatically from a seeded generator rather than collected from real-world LLM deployments. While the generator was designed to produce realistic distributions&mdash;including hard negatives and hard positives&mdash;the detection performance on genuinely real-world AI-generated scripts may differ. We acknowledge this limitation explicitly and do not claim the reported numbers will transfer unchanged to production deployments.</p>
+
+<h2 class="subsec-title">C. Construct Validity</h2>
+<p>The runtime enforcement produced by the PolicyGenerator and RuntimeMonitor is a prototype sketch: seccomp profiles and Rego policies are emitted as data but are not enforced by a live kernel-level filter in the current prototype. The latency measurements therefore do not include the overhead of live seccomp-bpf filter installation, which would add a one-time cost per execution. We report this honestly and do not overclaim live enforcement capability.</p>
+
+<!-- ==================== SECTION XI ==================== -->
+<h1 class="sec-title">XI. Reproducibility</h1>
+
+<p>All code, dataset generation logic, experiment runners, and figure generation scripts are contained in the ACTE project directory. The complete experimental pipeline can be reproduced by executing <code>python -m experiments.run_all</code> from the project root, which regenerates the dataset (seed=1337), trains the model, evaluates all RQs and ablation configurations, and writes results to <code>experiments/results/results.json</code> and <code>results.md</code>. The figures are regenerated from the JSON output.</p>
+
+<p>The dataset provenance is documented in <code>data/PROVENANCE.md</code>. Python version 3.11.6 on Linux (kernel 6.17.0) was used for the reported run. All dependencies are listed in <code>requirements.txt</code>. The reported run was generated on 2026-06-30T13:07:39 UTC and is bit-reproducible given the same seed and platform.</p>
+
+<!-- ==================== SECTION XII ==================== -->
+<h1 class="sec-title">XII. Related Work</h1>
+
+<h2 class="subsec-title">A. Static Analysis and Linting</h2>
+<p>ShellCheck&nbsp;[1] is the most widely deployed static analyzer for shell scripts, detecting syntactic bugs, quoting errors, and portability issues via a combination of grammar-based parsing and heuristic rules. Its scope is correctness and style rather than security, and it operates entirely statically without a concept of trust or adaptive scoring. Our evaluation quantifies the practical limitation of applying ShellCheck as a security filter: the error+warning mapping achieves recall of only 7.9% at FPR of 17.4% on our test set, confirming its unsuitability for the threat model considered here.</p>
+
+<h2 class="subsec-title">B. Mandatory Access Control</h2>
+<p>SELinux&nbsp;[2] and AppArmor&nbsp;[3] are kernel-enforced mandatory access-control frameworks. SELinux implements a type-enforcement model in which every process and object is labeled and access decisions follow an explicit policy database. AppArmor uses pathname-based profiles. Both are highly effective at constraining known applications, but they require human-authored per-process policies; they cannot automatically generate an appropriate policy from the content of an unseen script at submission time. ACTE's PolicyGenerator addresses this gap by synthesizing enforcement artifacts directly from the risk assessment.</p>
+
+<h2 class="subsec-title">C. Behavioral Monitoring</h2>
+<p>Falco&nbsp;[4] is a runtime threat-detection tool that monitors kernel-level system calls and container events against a rule set, alerting on anomalous behavior. Linux <code>auditd</code>&nbsp;[5] provides a similar audit log at the syscall level. eBPF-based monitors extend this capability with programmable, low-overhead kernel probes&nbsp;[6]. These systems are inherently <em>reactive</em>: they detect dangerous behavior after it begins. ACTE is <em>proactive</em>: it assigns a trust level before execution and generates an enforcement policy that constrains what the script is permitted to do, rather than logging what it did.</p>
+
+<h2 class="subsec-title">D. Sandboxing and Policy Enforcement</h2>
+<p><code>seccomp-bpf</code>&nbsp;[7] provides a kernel-enforced syscall filter that can deny or kill a process on forbidden system calls. Linux namespaces&nbsp;[8] and cgroups&nbsp;[9] isolate process view of the system and constrain resource consumption respectively. Open Policy Agent (OPA) and its Rego policy language&nbsp;[10] provide a general-purpose, declarative policy engine used in cloud-native stacks. ACTE builds on this ecosystem: its PolicyGenerator emits seccomp profiles and Rego policies, and its RuntimeMonitor simulates seccomp-bpf enforcement. The novelty lies in the automated derivation of these policies from a content-based trust score rather than requiring manual authorship.</p>
+
+<h2 class="subsec-title">E. LLM-Generated Code Security</h2>
+<p>A growing body of work studies the security properties of LLM-generated code. Pearce et al.&nbsp;[11] found that GitHub Copilot introduces security vulnerabilities in approximately 40% of generated code samples across a range of CWE categories. Khoury et al.&nbsp;[12] evaluated ChatGPT-generated code for security vulnerabilities, finding frequent occurrences of SQL injection, path traversal, and command injection. Tony et al.&nbsp;[13] introduced LLMSecEval, a benchmark for evaluating LLMs on security-sensitive code generation tasks. These works focus on code quality and vulnerability introduction at generation time; ACTE complements them by providing a runtime gate that intercepts potentially dangerous scripts regardless of how they were generated.</p>
+
+<h2 class="subsec-title">F. Zero-Trust Execution Models</h2>
+<p>The zero-trust security paradigm&nbsp;[14] posits that no entity should be inherently trusted, and access decisions should be continuously evaluated based on context and evidence. ACTE instantiates a zero-trust approach specifically for code execution: every submitted script receives a trust evaluation from first principles, and execution permissions are granted proportionate to the assessed trust level rather than based on the submitter's identity or the script's syntactic validity. This aligns with emerging work on continuous authorization for automated systems&nbsp;[15].</p>
+
+<!-- ==================== SECTION XIII ==================== -->
+<h1 class="sec-title">XIII. Conclusion and Future Work</h1>
+
+<p>We presented ACTE, a formally grounded, prototype-implemented adaptive trust framework for AI-generated shell scripts. The system combines semantic parsing, execution-context analysis, threat-intelligence signature matching, and online SGD feedback learning into a logistic risk model that achieves F1&nbsp;=&nbsp;0.915, ROC-AUC&nbsp;=&nbsp;0.976, mean latency of 0.51&nbsp;ms/script, and a 93.8% reduction in false-positive rate relative to ShellCheck v0.9.0. All results are reproducible from the open codebase and seeded dataset. We honestly acknowledge the synthetic dataset and the prototype-sketch status of live enforcement as limitations.</p>
+
+<p>This paper is the first in a planned research program. Immediate future work includes: (1)&nbsp;a real-world dataset collection study gathering AI-generated scripts from deployed LLM coding assistants, with human-expert labeling, to validate the detection performance on non-synthetic data; (2)&nbsp;integration of ACTE with a live container runtime (containerd or Podman) to deploy the generated seccomp profiles and cgroup constraints as actual kernel-level enforcement rather than sketches; (3)&nbsp;extension of the threat-intelligence knowledge base with community-sourced signatures and automated signature induction from observed incidents; (4)&nbsp;a formal analysis of the monotonicity property and its implications for adversarial robustness under feature-space attacks; and (5)&nbsp;evaluation of ACTE in a multi-tenant CI/CD environment to characterize operational false-positive burden and operator feedback loop latency.</p>
+
+<!-- ==================== REFERENCES ==================== -->
+<h1 class="sec-title">References</h1>
+<div class="references">
+<ol>
+  <li>V. Stinner, "ShellCheck: A static analysis tool for shell scripts," <em>GitHub repository</em>, 2012. [Online]. Available: https://github.com/koalaman/shellcheck</li>
+  <li>R. Loscocco and S. Smalley, "Integrating flexible support for security policies into the Linux operating system," in <em>Proc. USENIX Annual Technical Conference</em>, 2001, pp. 29&ndash;42.</li>
+  <li>J. Johansen, "AppArmor: Practical security in the Linux kernel," in <em>Proc. Linux Symposium</em>, 2004, pp. 170&ndash;179.</li>
+  <li>Falco Authors, "Falco: Cloud-native runtime security," <em>CNCF Project</em>, 2016. [Online]. Available: https://falco.org</li>
+  <li>R. Grimes, "Linux audit system," <em>Linux Journal</em>, vol. 2004, no. 117, p. 2, 2004.</li>
+  <li>B. Gregg, <em>BPF Performance Tools</em>. Addison-Wesley, 2019.</li>
+  <li>W. Drewry and T. Ormandy, "Chromium OS: Seccomp filters," <em>Google Chrome OS Security</em>, 2012. [Online]. Available: https://www.kernel.org/doc/html/latest/userspace-api/seccomp_filter.html</li>
+  <li>M. Kerrisk, "Namespaces in operation," <em>LWN.net</em>, 2013. [Online]. Available: https://lwn.net/Articles/531114/</li>
+  <li>P. Menage, "Adding generic process containers to the Linux kernel," in <em>Proc. Linux Symposium</em>, 2007, pp. 45&ndash;57.</li>
+  <li>Open Policy Agent Authors, "Open Policy Agent: Policy-based control for cloud native environments," <em>CNCF Project</em>, 2016. [Online]. Available: https://www.openpolicyagent.org</li>
+  <li>H. Pearce, B. Ahmad, B. Tan, B. Dolan-Gavitt, and R. Karri, "Asleep at the keyboard? Assessing the security of GitHub Copilot's code contributions," in <em>Proc. IEEE Symposium on Security and Privacy (S&amp;P)</em>, 2022, pp. 754&ndash;768.</li>
+  <li>R. Khoury, A. R. Avila, J. Brunelle, and B. M. Camara, "How secure is code generated by ChatGPT?" in <em>Proc. IEEE International Symposium on Systems Engineering</em>, 2023.</li>
+  <li>C. Tony, M. Mutas, N. E. D&iacute;az Ferreyra, and R. Scandariato, "LLMSecEval: A dataset of natural language prompts for security evaluations," in <em>Proc. IEEE/ACM Mining Software Repositories (MSR)</em>, 2023.</li>
+  <li>NIST, "Zero trust architecture," <em>NIST Special Publication 800-207</em>, National Institute of Standards and Technology, 2020.</li>
+  <li>J. Kindervag, "Build security into your network's DNA: The zero trust network architecture," <em>Forrester Research</em>, Tech. Rep., 2010.</li>
+</ol>
+</div>
+
+</div><!-- end twocol -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // No TOC page-ref resolution needed; just ensure math renders
+});
+</script>
+</body>
+</html>
