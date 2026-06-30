@@ -1,6 +1,14 @@
 # ACTE — Adaptive Context-Aware Trust Execution
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21072886.svg)](https://doi.org/10.5281/zenodo.21072886)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+
 **Adaptive Trust-Oriented Runtime Security for AI-Generated Shell Scripts**
+
+> 📄 **Published archive (citable):** This work is permanently archived on Zenodo
+> with DOI [**10.5281/zenodo.21072886**](https://doi.org/10.5281/zenodo.21072886)
+> (concept DOI — always resolves to the latest version).
 
 A research prototype, dataset, and fully reproducible experiment harness for
 **securing AI-generated shell scripts**. Given a shell script, ACTE computes a
@@ -184,6 +192,9 @@ If you use ACTE or this dataset in your research, please cite:
   author       = {Denys Yakymov},
   title        = {Adaptive Trust-Oriented Runtime Security for AI-Generated Shell Scripts},
   year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.21072886},
+  url          = {https://doi.org/10.5281/zenodo.21072886},
   howpublished = {\url{https://github.com/yakden/acte-secure-ai-shell-scripts}},
   note         = {Research prototype, dataset, and experiments. ORCID: 0009-0005-2398-8976}
 }
