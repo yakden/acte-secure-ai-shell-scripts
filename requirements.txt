@@ -1,0 +1,10 @@
+# ACTE prototype — Python dependencies
+# Tested with Python 3.11.
+bashlex>=0.18        # shell-script parsing (with regex tokenizer fallback)
+scikit-learn>=1.3    # metrics: precision/recall/F1/MCC/ROC/PR
+matplotlib>=3.7      # ROC / PR / ablation / comparison figures
+numpy>=1.24          # numeric support
+
+# External (non-Python) baseline tool, installed via the OS package manager:
+#   ShellCheck >= 0.8   ->   apt-get install shellcheck   (or: brew install shellcheck)
+# If ShellCheck is absent the baseline is skipped gracefully (never fabricated).

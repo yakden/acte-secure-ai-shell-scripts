@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+.DS_Store
+# Word/PDF previews auto-generated from markdown
+data/PROVENANCE.pdf
+data/PROVENANCE.docx

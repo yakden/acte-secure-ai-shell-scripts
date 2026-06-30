@@ -1,0 +1,296 @@
+{
+  "version": "1.0.0",
+  "description": "Curated rule/signature set mapping shell-script patterns to additive risk weights for the ACTE TrustEvaluationEngine. Weights are on an unbounded positive scale; they are aggregated and squashed by the trust function. Each signature documents a rationale and a category so that the contribution of every rule is auditable.",
+  "categories": {
+    "destructive": "Irreversible or destructive operations on data/filesystem/devices.",
+    "privilege": "Privilege escalation or operations requiring elevated rights.",
+    "network_egress": "Outbound network activity, remote code fetch/exec.",
+    "obfuscation": "Encoding/indirection used to hide intent.",
+    "persistence": "Mechanisms to persist across reboots/sessions.",
+    "exfiltration": "Movement of data off the host.",
+    "tampering": "Modification of sensitive system configuration.",
+    "benign_signal": "Patterns that lower risk (negative weight)."
+  },
+  "signatures": [
+    {
+      "id": "rm_rf_root",
+      "category": "destructive",
+      "weight": 9.5,
+      "regex": "\\brm\\s+(-[a-zA-Z]*\\s+)*-[a-zA-Z]*[rf][a-zA-Z]*\\s+(--no-preserve-root\\s+)?(/|/\\*|~|\\$HOME)(\\s|$)",
+      "rationale": "Recursive force removal targeting root, home, or wildcard root paths is catastrophic and irreversible."
+    },
+    {
+      "id": "rm_rf_generic",
+      "category": "destructive",
+      "weight": 4.0,
+      "regex": "\\brm\\s+(-[a-zA-Z]*\\s+)*-[a-zA-Z]*[rf][a-zA-Z]*[rf][a-zA-Z]*\\b",
+      "rationale": "Recursive force removal is irreversible; risky even when target is not root."
+    },
+    {
+      "id": "no_preserve_root",
+      "category": "destructive",
+      "weight": 5.0,
+      "regex": "--no-preserve-root",
+      "rationale": "Explicitly disables the rm safety guard for '/'."
+    },
+    {
+      "id": "dd_to_device",
+      "category": "destructive",
+      "weight": 7.5,
+      "regex": "\\bdd\\b[^\\n]*\\bof=/dev/(sd|nvme|hd|mmcblk|disk|vd)[a-z0-9]*",
+      "rationale": "Writing with dd directly to a block device destroys data and partition tables."
+    },
+    {
+      "id": "mkfs_format",
+      "category": "destructive",
+      "weight": 7.0,
+      "regex": "\\bmkfs(\\.[a-z0-9]+)?\\b[^\\n]*\\b/dev/",
+      "rationale": "Formatting a filesystem on a device is destructive."
+    },
+    {
+      "id": "fork_bomb",
+      "category": "destructive",
+      "weight": 8.5,
+      "regex": ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;\\s*:",
+      "rationale": "Classic bash fork bomb causing denial of service."
+    },
+    {
+      "id": "fork_bomb_loose",
+      "category": "destructive",
+      "weight": 6.0,
+      "regex": "\\}\\s*;\\s*:\\s*$|\\b(while\\s+true|for\\s*\\(\\(;;\\)\\))\\b[^\\n]*&\\s*$",
+      "rationale": "Unbounded background spawning loop resembling resource-exhaustion."
+    },
+    {
+      "id": "overwrite_block_device",
+      "category": "destructive",
+      "weight": 6.5,
+      "regex": ">\\s*/dev/(sd|nvme|hd|mmcblk)[a-z0-9]*",
+      "rationale": "Redirecting output straight onto a raw block device corrupts it."
+    },
+    {
+      "id": "chmod_777",
+      "category": "tampering",
+      "weight": 3.0,
+      "regex": "\\bchmod\\s+(-[a-zA-Z]*\\s+)*0?777\\b",
+      "rationale": "World-writable permissions weaken security posture."
+    },
+    {
+      "id": "chmod_recursive_root",
+      "category": "tampering",
+      "weight": 4.5,
+      "regex": "\\bchmod\\s+-R[^\\n]*\\s(/|/etc|/usr|/bin|/var)(\\s|$)",
+      "rationale": "Recursive permission changes on system directories are dangerous."
+    },
+    {
+      "id": "curl_pipe_shell",
+      "category": "network_egress",
+      "weight": 7.0,
+      "regex": "\\b(curl|wget|fetch)\\b[^\\n|]*\\|\\s*(sudo\\s+)?(ba)?sh\\b",
+      "rationale": "Fetching remote content and piping directly to a shell executes untrusted code."
+    },
+    {
+      "id": "remote_exec_eval",
+      "category": "network_egress",
+      "weight": 6.0,
+      "regex": "\\beval\\s+\"?\\$\\(\\s*(curl|wget)\\b",
+      "rationale": "Evaluating the output of a remote fetch executes untrusted code."
+    },
+    {
+      "id": "wget_o_exec",
+      "category": "network_egress",
+      "weight": 5.0,
+      "regex": "\\bwget\\b[^\\n]*-O\\s*-\\s*[^\\n]*\\|\\s*(ba)?sh",
+      "rationale": "Streaming download piped to a shell interpreter."
+    },
+    {
+      "id": "reverse_shell_bash",
+      "category": "network_egress",
+      "weight": 9.0,
+      "regex": "(ba)?sh\\s+-i\\s*>&?\\s*/dev/tcp/",
+      "rationale": "Interactive shell redirected to a TCP socket is a reverse shell."
+    },
+    {
+      "id": "reverse_shell_nc",
+      "category": "network_egress",
+      "weight": 8.5,
+      "regex": "\\bnc(at)?\\b[^\\n]*(-e|\\s-c)\\s*(/bin/)?(ba)?sh",
+      "rationale": "Netcat spawning a shell back to a remote host is a reverse shell."
+    },
+    {
+      "id": "reverse_shell_python",
+      "category": "network_egress",
+      "weight": 8.5,
+      "regex": "python[0-9]?\\s+-c[^\\n]*socket[^\\n]*(connect|pty\\.spawn)",
+      "rationale": "Python one-liner opening a socket and spawning a shell is a reverse shell."
+    },
+    {
+      "id": "dev_tcp_redirect",
+      "category": "network_egress",
+      "weight": 6.5,
+      "regex": "/dev/(tcp|udp)/[0-9a-zA-Z.\\-]+/[0-9]+",
+      "rationale": "Bash pseudo-device network redirection used for covert channels."
+    },
+    {
+      "id": "base64_decode_exec",
+      "category": "obfuscation",
+      "weight": 6.5,
+      "regex": "\\bbase64\\s+(-d|--decode)\\b[^\\n]*\\|\\s*(ba)?sh",
+      "rationale": "Decoding base64 and piping to a shell hides the executed payload."
+    },
+    {
+      "id": "base64_decode_present",
+      "category": "obfuscation",
+      "weight": 2.5,
+      "regex": "\\bbase64\\s+(-d|--decode)\\b",
+      "rationale": "Base64 decoding is a common obfuscation building block."
+    },
+    {
+      "id": "eval_present",
+      "category": "obfuscation",
+      "weight": 2.0,
+      "regex": "\\beval\\b",
+      "rationale": "eval enables dynamic, hard-to-audit execution."
+    },
+    {
+      "id": "hex_decode_exec",
+      "category": "obfuscation",
+      "weight": 4.0,
+      "regex": "\\b(xxd\\s+-r|printf)\\b[^\\n]*(\\\\x[0-9a-fA-F]{2}){4,}",
+      "rationale": "Hex-encoded payloads are used to obfuscate commands."
+    },
+    {
+      "id": "char_obfuscation",
+      "category": "obfuscation",
+      "weight": 3.0,
+      "regex": "\\$\\(\\s*printf[^\\n]*\\\\[0-7]{3}",
+      "rationale": "Octal/printf character construction hides command strings."
+    },
+    {
+      "id": "string_reverse_exec",
+      "category": "obfuscation",
+      "weight": 3.5,
+      "regex": "\\brev\\b[^\\n]*\\|\\s*(ba)?sh|\\$\\(\\s*echo[^\\n]*\\|\\s*rev\\s*\\)",
+      "rationale": "Reversing strings to evade signature detection."
+    },
+    {
+      "id": "sudo_present",
+      "category": "privilege",
+      "weight": 2.5,
+      "regex": "\\bsudo\\b",
+      "rationale": "Elevated privileges expand blast radius of any action."
+    },
+    {
+      "id": "sudo_nopasswd",
+      "category": "privilege",
+      "weight": 5.0,
+      "regex": "NOPASSWD|echo[^\\n]*>>\\s*/etc/sudoers",
+      "rationale": "Granting passwordless sudo is a privilege-escalation persistence trick."
+    },
+    {
+      "id": "setuid_bit",
+      "category": "privilege",
+      "weight": 5.0,
+      "regex": "\\bchmod\\s+(-[a-zA-Z]*\\s+)*([u]?\\+s|4[0-7]{3})\\b",
+      "rationale": "Setting the setuid bit can create privilege-escalation backdoors."
+    },
+    {
+      "id": "crontab_edit",
+      "category": "persistence",
+      "weight": 4.0,
+      "regex": "\\bcrontab\\b[^\\n]*(-|<)|>>?\\s*/etc/cron|/etc/cron\\.[a-z]+/",
+      "rationale": "Modifying cron schedules establishes persistence."
+    },
+    {
+      "id": "systemd_persistence",
+      "category": "persistence",
+      "weight": 4.0,
+      "regex": ">\\s*/etc/systemd/system/|\\bsystemctl\\s+enable\\b",
+      "rationale": "Installing/enabling services establishes persistence."
+    },
+    {
+      "id": "rc_local_persistence",
+      "category": "persistence",
+      "weight": 3.5,
+      "regex": ">>?\\s*(/etc/rc\\.local|~?/\\.bashrc|~?/\\.bash_profile|~?/\\.profile)",
+      "rationale": "Appending to startup files establishes persistence."
+    },
+    {
+      "id": "ssh_authorized_keys",
+      "category": "persistence",
+      "weight": 5.5,
+      "regex": ">>?\\s*[^\\n]*\\.ssh/authorized_keys",
+      "rationale": "Injecting SSH keys creates a remote backdoor."
+    },
+    {
+      "id": "etc_write",
+      "category": "tampering",
+      "weight": 3.5,
+      "regex": ">>?\\s*/etc/(passwd|shadow|hosts|fstab|crontab|ld\\.so)",
+      "rationale": "Writing to sensitive /etc files tampers with system configuration."
+    },
+    {
+      "id": "iptables_flush",
+      "category": "tampering",
+      "weight": 3.0,
+      "regex": "\\biptables\\b[^\\n]*(-F|--flush)|\\bufw\\s+disable\\b",
+      "rationale": "Flushing firewall rules weakens host defenses."
+    },
+    {
+      "id": "history_clear",
+      "category": "tampering",
+      "weight": 3.0,
+      "regex": "\\b(history\\s+-c|>\\s*~?/\\.bash_history|unset\\s+HISTFILE)\\b",
+      "rationale": "Clearing shell history is anti-forensic behavior."
+    },
+    {
+      "id": "data_exfil_curl",
+      "category": "exfiltration",
+      "weight": 4.5,
+      "regex": "\\b(curl|wget)\\b[^\\n]*(--data|-d|-F|--upload-file|-T)\\b[^\\n]*(http|ftp)",
+      "rationale": "Uploading local data to a remote endpoint is potential exfiltration."
+    },
+    {
+      "id": "etc_passwd_read_send",
+      "category": "exfiltration",
+      "weight": 5.0,
+      "regex": "/etc/(passwd|shadow)[^\\n]*\\|\\s*(curl|wget|nc)",
+      "rationale": "Reading credential files and sending them off-host is exfiltration."
+    },
+    {
+      "id": "wipe_logs",
+      "category": "tampering",
+      "weight": 3.5,
+      "regex": ">\\s*/var/log/|\\brm\\b[^\\n]*/var/log/",
+      "rationale": "Destroying logs is anti-forensic and tampering."
+    },
+    {
+      "id": "kill_security_tools",
+      "category": "tampering",
+      "weight": 4.0,
+      "regex": "\\b(systemctl\\s+stop|service)\\b[^\\n]*(auditd|firewalld|apparmor|selinux)",
+      "rationale": "Disabling security daemons reduces defenses."
+    },
+    {
+      "id": "shebang_present",
+      "category": "benign_signal",
+      "weight": -0.5,
+      "regex": "^#!\\s*/usr/bin/env\\s+bash|^#!\\s*/bin/(ba)?sh",
+      "rationale": "A proper shebang is weak evidence of a legitimate, authored script."
+    },
+    {
+      "id": "set_euo_pipefail",
+      "category": "benign_signal",
+      "weight": -1.0,
+      "regex": "set\\s+-[a-z]*e[a-z]*\\b|set\\s+-o\\s+pipefail",
+      "rationale": "Defensive 'set -e/-u/-o pipefail' suggests careful authoring."
+    },
+    {
+      "id": "comment_density_marker",
+      "category": "benign_signal",
+      "weight": -0.5,
+      "regex": "(^|\\n)\\s*#\\s*[A-Za-z]{3,}",
+      "rationale": "Explanatory comments are weak evidence of legitimate intent."
+    }
+  ]
+}
