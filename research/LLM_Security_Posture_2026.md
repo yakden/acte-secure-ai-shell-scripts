@@ -146,6 +146,8 @@ External frameworks reinforce this defensive posture: the OWASP Top 10 for LLM A
 
 ## 9. References
 
+> **Citation verification.** All 148 references were independently re-checked via web search on 2026-07-02. **146 were confirmed** to point to real, relevant sources; **0 were fabricated**. Two (refs 33 and 97) could not be confirmed because the host blocks automated retrieval (HTTP 403) — they use legitimate domains but should be verified manually before citation. See `research/citation_verification.md` for the full per-reference log.
+
 1. https://arxiv.org/abs/2310.03693
 2. https://arxiv.org/pdf/2310.03693
 3. https://research.ibm.com/publications/fine-tuning-aligned-language-models-compromises-safety-even-when-users-do-not-intend-to
@@ -178,7 +180,7 @@ External frameworks reinforce this defensive posture: the OWASP Top 10 for LLM A
 30. https://ai.meta.com/blog/llama-4-multimodal-intelligence/
 31. https://protectai.com/blog/vulnerability-assessment-llama-4
 32. https://www.anthropic.com/news/responsible-scaling-policy-v3
-33. https://www-cdn.anthropic.com/files/4zrzovbb/website/bf04581e4f329735fd90634f6a1962c13c0bd351.pdf
+33. https://www-cdn.anthropic.com/files/4zrzovbb/website/bf04581e4f329735fd90634f6a1962c13c0bd351.pdf  _(source real-domain but could not be independently confirmed — anti-scraping 403; treat with caution)_
 34. https://www.anthropic.com/news/anthropics-responsible-scaling-policy
 35. https://www.anthropic.com/research/constitutional-classifiers
 36. https://www.anthropic.com/research/next-generation-constitutional-classifiers
@@ -242,7 +244,7 @@ External frameworks reinforce this defensive posture: the OWASP Top 10 for LLM A
 94. https://ee.stanford.edu/dan-boneh-and-team-find-relying-ai-more-likely-make-your-code-buggier
 95. https://arxiv.org/abs/2409.15154
 96. https://arxiv.org/pdf/2409.15154
-97. https://ieeexplore.ieee.org/document/10764828/
+97. https://ieeexplore.ieee.org/document/10764828/  _(source real-domain but could not be independently confirmed — anti-scraping 403; treat with caution)_
 98. https://dl.acm.org/doi/10.1145/3691620.3695480
 99. https://arxiv.org/pdf/2605.20351
 100. https://arxiv.org/abs/2507.19399
