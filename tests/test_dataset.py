@@ -101,9 +101,24 @@ def test_real_world_builds_and_loads():
 def test_real_world_disjoint_from_synthetic(samples):
     real = load_samples(_real_world_manifest())
     syn_scripts = {s.script for s in samples}
-    # Real scripts are independently authored, not template outputs.
+    # No byte-identical overlap ...
     overlap = [s.id for s in real if s.script in syn_scripts]
     assert overlap == [], f"real-world scripts duplicate synthetic ones: {overlap}"
+
+
+def test_real_world_not_near_duplicate_of_training(samples):
+    # ... and no *near*-duplicate either: a truly independent holdout must not
+    # contain a script that is a trivial edit of a training sample. We cap the
+    # max sequence similarity to any training script well below 1.0.
+    import difflib
+    real = load_samples(_real_world_manifest())
+    offenders = []
+    for r in real:
+        best = max(difflib.SequenceMatcher(None, r.script, s.script).ratio()
+                   for s in samples)
+        if best >= 0.85:
+            offenders.append((r.id, round(best, 2)))
+    assert offenders == [], f"real-world scripts too similar to training: {offenders}"
 
 
 def _real_world_manifest():

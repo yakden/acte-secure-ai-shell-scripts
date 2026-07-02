@@ -2,7 +2,7 @@
 
 > All numbers below were produced by a real, reproducible run of the ACTE prototype (`python -m experiments.run_all`). Nothing is hardcoded.
 
-- Generated (UTC): `2026-07-02T06:10:34.239903+00:00`
+- Generated (UTC): `2026-07-02T07:00:01.207131+00:00`
 - Seed: `1337`  |  Training epochs: `40`  |  Test fraction: `0.4`
 - Python `3.11.15`  |  Platform `Linux-6.18.5-x86_64-with-glibc2.39`
 - Dataset: **420 samples** (train=252, test=168, test positives=76)
@@ -84,31 +84,31 @@ Each configuration is trained and evaluated with the identical protocol; the dro
 
 ## RQ1b — Cross-validated detection (robustness of the headline number)
 
-A single held-out split gives one number with no spread. Below, the full ACTE protocol is repeated inside 5-fold cross-validation under two schemes, reported as **mean ± std** across folds.
+A single held-out split gives one number with no spread. Below, the full ACTE protocol is repeated inside 5-fold cross-validation under two schemes, reported as **mean ± std** across folds. To avoid the variance that F1-optimal threshold tuning introduces on small per-fold partitions, every fold here uses the fixed default operating point (τ = 0.5); the tuned single-split operating point of RQ1 is reported separately.
 
-- **Stratified k-fold** — folds balanced by (category, label); estimates generalization to new samples from the same distribution.
-- **Leave-template-out k-fold** — folds split by generating template (of 70 templates), so no template appears in both train and test; the harder test of generalization to unseen script structures, and the direct rebuttal to the 'template memorization' objection.
+- **Stratified k-fold** (scikit-learn `StratifiedKFold`) — folds preserve the label ratio; estimates generalization to new samples from the same distribution.
+- **Leave-template-out k-fold** (`StratifiedGroupKFold` over 70 templates) — no template contributes scripts to both the training and evaluation fold, so the model is scored on template structures it never trained on. This is the harder test and it substantially weakens (though does not eliminate) the 'template-memorization' concern for a synthetic corpus.
 
 | Scheme | Precision | Recall | F1 | MCC | ROC-AUC | FPR |
 |---|---|---|---|---|---|---|
-| Stratified k-fold | 0.994 ± 0.011 | 0.831 ± 0.058 | 0.904 ± 0.033 | 0.849 ± 0.042 | 0.947 ± 0.021 | 0.004 ± 0.009 |
-| Leave-template-out | 0.875 ± 0.201 | 0.789 ± 0.217 | 0.815 ± 0.191 | 0.722 ± 0.244 | 0.926 ± 0.071 | 0.076 ± 0.085 |
+| Stratified k-fold | 0.884 ± 0.036 | 0.895 ± 0.055 | 0.887 ± 0.025 | 0.796 ± 0.040 | 0.942 ± 0.035 | 0.100 ± 0.040 |
+| Leave-template-out | 0.903 ± 0.142 | 0.800 ± 0.175 | 0.823 ± 0.101 | 0.727 ± 0.139 | 0.934 ± 0.100 | 0.113 ± 0.186 |
 
-Pooled out-of-fold (Stratified): F1=0.905, precision=0.994, recall=0.832, FPR=0.004 (every sample scored once, by a model that never trained on it).
-Pooled out-of-fold (Leave-template-out): F1=0.817, precision=0.847, recall=0.789, FPR=0.117 (every sample scored once, by a model that never trained on it).
+Pooled out-of-fold (Stratified): F1=0.888, precision=0.881, recall=0.895, FPR=0.100 (every sample scored once, by a model that never trained on it).
+Pooled out-of-fold (Leave-template-out): F1=0.826, precision=0.854, recall=0.800, FPR=0.113 (every sample scored once, by a model that never trained on it).
 
 ## RQ2 — Computational cost (per-script analysis latency)
 
 | Statistic | Milliseconds |
 |---|---|
-| Mean | 0.492 |
-| Median | 0.462 |
-| p95 | 0.941 |
-| p99 | 1.111 |
-| Min | 0.202 |
-| Max | 1.167 |
-| Stdev | 0.192 |
-| Throughput (scripts/s) | 2033.0 |
+| Mean | 0.533 |
+| Median | 0.496 |
+| p95 | 0.956 |
+| p99 | 1.026 |
+| Min | 0.210 |
+| Max | 1.743 |
+| Stdev | 0.198 |
+| Throughput (scripts/s) | 1875.0 |
 
 Measured over 420 scripts, 3 repeats each (min taken).
 
@@ -133,21 +133,47 @@ The model is trained on the **full synthetic corpus (420 samples)** and then eva
 | Metric | Value |
 |---|---|
 | Precision | 1.000 |
-| Recall | 0.905 |
-| F1 | 0.950 |
-| Accuracy | 0.951 |
-| ROC-AUC | 0.956 |
+| Recall | 0.810 |
+| F1 | 0.895 |
+| Accuracy | 0.902 |
+| ROC-AUC | 0.990 |
 | False Positive Rate | 0.000 |
-| F1 95% CI | [0.865, 1.000] |
+| F1 95% CI | [0.765, 0.976] |
 
-Confusion matrix: TN=20, FP=0, FN=2, TP=19 (decision threshold 0.319, fixed from synthetic training).
+Confusion matrix: TN=20, FP=0, FN=4, TP=17 (decision threshold 0.319, fixed from synthetic training).
 
 **Misclassifications** (the honest failure cases):
 
 | id | true | predicted | risk | why it is hard |
 |---|---|---|---|---|
-| `rw_danger_perl_revshell` | 1 | 0 | 0.085 | Perl reverse shell connecting back to an attacker and exec'ing /bin/sh. |
-| `rw_danger_find_delete` | 1 | 0 | 0.155 | Deletes every file from root downward, sidestepping literal 'rm -rf /'. |
+| `rw_danger_socat_revshell` | 1 | 0 | 0.209 | socat connects back to an attacker and hands it an interactive shell (a reverse shell). |
+| `rw_danger_blkdiscard` | 1 | 0 | 0.256 | Issues a discard/TRIM over an entire block device, irrecoverably erasing it. |
+| `rw_danger_rsync_wipe` | 1 | 0 | 0.231 | Mirrors an empty directory onto root with --delete, erasing the filesystem without ever naming rm. |
+| `rw_danger_rot13_exec` | 1 | 0 | 0.201 | Decodes a ROT13-obfuscated payload with tr and pipes it to a shell, hiding the executed command from a casual reader and from literal-string scanners. |
+
+## RQ5 — Comparison with learned text-classifier baselines
+
+ShellCheck (RQ3) is a linter, not a security classifier, so the more demanding comparison is against off-the-shelf supervised text classifiers trained on the same labels: TF-IDF (word 1–2 grams + char 3–5 grams) feeding Logistic Regression, a linear SVM, and a Random Forest. We report performance on the synthetic test split and, more importantly, on the independent real-world holdout after training on the full synthetic corpus.
+
+**Synthetic test split:**
+
+| Detector | Precision | Recall | F1 | ROC-AUC | FPR |
+|---|---|---|---|---|---|
+| ACTE (full) | 0.985 | 0.855 | 0.915 | 0.976 | 0.011 |
+| TF-IDF + LogReg | 0.974 | 0.974 | 0.974 | 0.999 | 0.022 |
+| TF-IDF + LinearSVM | 0.974 | 0.974 | 0.974 | 0.999 | 0.022 |
+| TF-IDF + RandomForest | 0.938 | 1.000 | 0.968 | 0.997 | 0.054 |
+
+**Real-world holdout (trained on full synthetic corpus):**
+
+| Detector | Precision | Recall | F1 | ROC-AUC | FPR |
+|---|---|---|---|---|---|
+| ACTE (full) | 1.000 | 0.810 | 0.895 | 0.990 | 0.000 |
+| TF-IDF + LogReg | 0.952 | 0.952 | 0.952 | 0.995 | 0.050 |
+| TF-IDF + LinearSVM | 0.955 | 1.000 | 0.977 | 0.988 | 0.050 |
+| TF-IDF + RandomForest | 0.778 | 1.000 | 0.875 | 0.940 | 0.300 |
+
+The linear text classifiers are competitive with, and on raw F1 sometimes exceed, ACTE — a candid finding. ACTE's advantage is not a higher F1 but (i) the lowest false-positive rate, which is the operational cost of a gate; (ii) a 13-feature model whose every decision is attributable, versus thousands of opaque lexical weights (the LogReg baseline keys on bare tokens such as `rf` and on distributional artifacts of the corpus); (iii) sub-millisecond online adaptation from a single label, where a fitted TF-IDF vocabulary is frozen; and (iv) the automatic synthesis of an enforcement policy, which a bare classifier does not produce.
 
 ## Figures
 
@@ -157,3 +183,4 @@ Confusion matrix: TN=20, FP=0, FN=2, TP=19 (decision threshold 0.319, fixed from
 - `../figures/cross_validation_f1.png` — per-fold F1 (stratified vs leave-template-out)
 - `../figures/baseline_comparison.png` — ACTE vs ShellCheck
 - `../figures/real_world_validation.png` — real-world external validation
+- `../figures/ml_baselines.png` — ACTE vs learned baselines (real-world holdout)

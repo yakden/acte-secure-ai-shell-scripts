@@ -146,6 +146,37 @@ def plot_real_world(
     return out_path
 
 
+def plot_ml_baselines(
+    detectors: List[str],
+    f1: List[float],
+    fpr: List[float],
+    out_path: str,
+    title: str = "ACTE vs. learned baselines on the real-world holdout",
+) -> str:
+    """Grouped bars: F1 and FPR for ACTE and each ML baseline on real scripts."""
+    import numpy as np
+
+    x = np.arange(len(detectors))
+    width = 0.38
+    fig, ax = plt.subplots(figsize=(7.5, 4.5))
+    b1 = ax.bar(x - width / 2, f1, width, label="F1", color="#2ca02c")
+    b2 = ax.bar(x + width / 2, fpr, width, label="False Positive Rate", color="#d62728")
+    for bars in (b1, b2):
+        for b in bars:
+            ax.text(b.get_x() + b.get_width() / 2, b.get_height() + 0.01,
+                    f"{b.get_height():.2f}", ha="center", va="bottom", fontsize=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(detectors, rotation=15, ha="right")
+    ax.set_ylim(0, 1.08)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+    return out_path
+
+
 def plot_baseline_comparison(
     detectors: List[str],
     precision: List[float],

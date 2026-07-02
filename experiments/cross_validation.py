@@ -47,62 +47,37 @@ _FULL_COMPONENTS = {"semantic": True, "context": True, "threat": True}
 def stratified_folds(
     samples: List[Sample], k: int = 5, seed: int = 1337
 ) -> List[List[int]]:
-    """Assign each sample to one of ``k`` folds, stratified by (category,label).
+    """Assign each sample to one of ``k`` folds, stratified by label.
 
-    Returns a list of ``k`` index lists into ``samples``.
+    Uses scikit-learn's :class:`StratifiedKFold` so every fold preserves the
+    positive/negative ratio of the full corpus. Returns ``k`` index lists.
     """
-    import random
+    from sklearn.model_selection import StratifiedKFold
 
-    rng = random.Random(seed)
-    buckets: Dict[Tuple[str, int], List[int]] = {}
-    for i, s in enumerate(samples):
-        buckets.setdefault((s.category, s.label), []).append(i)
-
-    folds: List[List[int]] = [[] for _ in range(k)]
-    for key in sorted(buckets.keys()):
-        idxs = sorted(buckets[key])
-        rng.shuffle(idxs)
-        # Round-robin the shuffled bucket across folds -> balanced strata.
-        for pos, idx in enumerate(idxs):
-            folds[pos % k].append(idx)
-    for f in folds:
-        f.sort()
-    return folds
+    y = [s.label for s in samples]
+    skf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
+    dummy = [[0]] * len(samples)
+    return [sorted(test_idx.tolist()) for _, test_idx in skf.split(dummy, y)]
 
 
 def grouped_folds(
     samples: List[Sample], k: int = 5, seed: int = 1337
 ) -> List[List[int]]:
-    """Assign folds by generating template so a template never spans folds.
+    """Assign folds by generating template, stratified on label.
 
-    Templates are greedily packed into ``k`` folds while keeping the number of
-    dangerous samples roughly balanced, so every fold still contains both
-    classes (a requirement for ROC/PR and MCC to be defined).
+    Uses scikit-learn's :class:`StratifiedGroupKFold`, which keeps every
+    template (the group) wholly inside one fold *and* balances the label
+    distribution across folds. This avoids the near-single-class folds that a
+    naive greedy grouping produces (and that would make per-fold precision/FPR
+    meaningless), while still guaranteeing no template spans train and test.
     """
-    import random
+    from sklearn.model_selection import StratifiedGroupKFold
 
-    rng = random.Random(seed)
-    groups: Dict[str, List[int]] = {}
-    for i, s in enumerate(samples):
-        groups.setdefault(s.template, []).append(i)
-
-    # Order groups by size (largest first) for a stable, balanced greedy fill.
-    ordered = sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
-    rng.shuffle(ordered)  # break size ties deterministically-at-seed
-    ordered.sort(key=lambda kv: -len(kv[1]))
-
-    folds: List[List[int]] = [[] for _ in range(k)]
-    fold_pos = [0] * k      # count of dangerous samples per fold (balance target)
-    for _tpl, idxs in ordered:
-        n_pos = sum(samples[i].label for i in idxs)
-        # Put this group in whichever fold currently has the fewest positives
-        # (ties -> smallest fold), keeping both size and class balance even.
-        target = min(range(k), key=lambda j: (fold_pos[j], len(folds[j])))
-        folds[target].extend(idxs)
-        fold_pos[target] += n_pos
-    for f in folds:
-        f.sort()
-    return folds
+    y = [s.label for s in samples]
+    groups = [s.template for s in samples]
+    sgkf = StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=seed)
+    dummy = [[0]] * len(samples)
+    return [sorted(test_idx.tolist()) for _, test_idx in sgkf.split(dummy, y, groups)]
 
 
 # --------------------------------------------------------------------------- #
@@ -114,8 +89,16 @@ def _run_cv(
     folds: List[List[int]],
     epochs: int,
     seed: int,
+    tune_threshold: bool = False,
 ) -> Dict:
-    """Train/evaluate the full model once per fold; aggregate the results."""
+    """Train/evaluate the full model once per fold; aggregate the results.
+
+    ``tune_threshold`` defaults to False: each fold uses the model's fixed
+    default operating point (:math:`\\tau=0.5`). Tuning an F1-optimal threshold
+    on the small, per-fold training partitions is a known variance amplifier and
+    makes the cross-validated spread reflect threshold noise rather than model
+    stability, so the conservative fixed-threshold estimate is reported instead.
+    """
     per_fold: List[Dict] = []
     oof_scores: List[float] = [0.0] * len(samples)   # out-of-fold risk scores
     oof_pred: List[int] = [0] * len(samples)
@@ -134,7 +117,7 @@ def _run_cv(
         metrics, scores, pred, _ = train_and_eval(
             train, test, train_feats, test_feats,
             enabled_components=dict(_FULL_COMPONENTS), use_feedback=True,
-            epochs=epochs, seed=seed,
+            epochs=epochs, seed=seed, tune_threshold=tune_threshold,
         )
         metrics["fold"] = fold_id
         metrics["n_test"] = len(test)
@@ -179,12 +162,21 @@ def _summarize(per_fold: List[Dict]) -> Dict[str, Dict[str, float]]:
 
 
 def run_cross_validation(
-    samples: List[Sample], k: int = 5, epochs: int = 40, seed: int = 1337
+    samples: List[Sample], k: int = 5, epochs: int = 40, seed: int = 1337,
+    tune_threshold: bool = False,
 ) -> Dict:
-    """Run both stratified and grouped (leave-template-out) k-fold CV."""
+    """Run both stratified and grouped (leave-template-out) k-fold CV.
+
+    Feature extraction is deterministic and label-independent, so computing it
+    once over the whole corpus before splitting introduces no train/test
+    leakage; feedback learning (and optional threshold tuning) still happens on
+    the training folds only.
+    """
     feats = compute_features(samples)
-    strat = _run_cv(samples, feats, stratified_folds(samples, k, seed), epochs, seed)
-    grouped = _run_cv(samples, feats, grouped_folds(samples, k, seed), epochs, seed)
+    strat = _run_cv(samples, feats, stratified_folds(samples, k, seed), epochs, seed,
+                    tune_threshold=tune_threshold)
+    grouped = _run_cv(samples, feats, grouped_folds(samples, k, seed), epochs, seed,
+                      tune_threshold=tune_threshold)
 
     n_templates = len({s.template for s in samples})
     return {

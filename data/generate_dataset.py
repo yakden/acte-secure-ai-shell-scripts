@@ -30,6 +30,7 @@ The binary label is what RQ1 (detection accuracy) is measured against.
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
 import random
@@ -591,7 +592,9 @@ def generate(verbose: bool = True) -> List[Dict]:
             template_id = getattr(fn, "__name__", "unknown")
             script = fn(rng)
             # Deduplicate identical scripts so metrics aren't inflated by copies.
-            h = hash(script)
+            # Use a stable content hash: the builtin hash() is salted per process
+            # (PYTHONHASHSEED), which would make corpus membership non-reproducible.
+            h = hashlib.sha256(script.encode("utf-8")).hexdigest()
             if h in seen_hashes:
                 continue
             seen_hashes.add(h)

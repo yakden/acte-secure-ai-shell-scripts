@@ -20,11 +20,10 @@ This repository accompanies the paper *"Adaptive Trust-Oriented Runtime Security
 for AI-Generated Shell Scripts"* — see
 [`paper/`](paper/Adaptive_Trust_Oriented_Runtime_Security_for_AI_Generated_Shell_Scripts.pdf).
 
-> **Academic integrity.** Every number reported in `experiments/results/` is
-> produced by a real, reproducible run of this prototype — nothing is hardcoded
-> or fabricated. Re-running `python -m experiments.run_all` reproduces all
-> classification metrics exactly (latency, being a wall-clock measurement,
-> varies slightly between runs by design).
+> **Reproducibility.** Every number in `experiments/results/` comes from a single
+> run of `python -m experiments.run_all`, which regenerates the data and recomputes
+> all metrics; classification metrics are deterministic given the seed, and only
+> wall-clock latency varies between runs.
 
 ---
 
@@ -45,15 +44,20 @@ positives — ACTE achieves **F1 = 0.915** (precision 0.985, recall 0.855,
 ROC-AUC 0.976) at a mean analysis cost of **~0.51 ms/script**, while reducing the
 false-positive rate by **93.8%** relative to a ShellCheck baseline.
 
-The headline is not a single-split artifact. Five-fold cross-validation gives
-**F1 = 0.904 ± 0.033**, and a stricter **leave-template-out** cross-validation —
-which forbids any generating template from spanning the train/test folds — still
-reaches **F1 = 0.815 ± 0.191**, rebutting the "template-memorization" objection to
-synthetic corpora. A bootstrap 95% CI on F1 is **[0.861, 0.959]**, and ACTE beats
-ShellCheck by an exact **McNemar test (p ≈ 2×10⁻²¹)**. A model trained *only* on
-the synthetic corpus and then frozen generalizes to an **independent hand-authored
-holdout of 41 real, publicly-documented scripts** at **F1 = 0.950, precision 1.000,
-FPR 0.000** — a genuine train-synthetic / test-real result.
+The headline is not a single-split artifact, and we report the unflattering
+numbers alongside the flattering ones. Five-fold cross-validation (at the fixed
+default threshold) gives **F1 = 0.887 ± 0.025**; a stricter **leave-template-out**
+cross-validation, which forbids any generating template from spanning the
+train/test folds, still reaches **F1 = 0.823 ± 0.101** — weakening, though not
+dispelling, the "template-memorization" objection to synthetic corpora. The very
+low headline FPR of 0.011 reflects a *tuned* threshold; at the default operating
+point the cross-validated FPR is ≈0.10. Trained *only* on synthetic data and then
+frozen, ACTE clears every safe script in an **independent 41-script real-world
+holdout** (precision 1.000, FPR 0.000, ROC-AUC 0.990) but misses four evasive
+payloads, for **F1 = 0.895** (recall 0.810). Against learned TF-IDF baselines
+(logistic regression, linear SVM, random forest) ACTE is **competitive, not
+dominant**, on raw F1; its edge is the lowest false-positive rate, an interpretable
+13-feature decision, online adaptation, and the enforcement policy it emits.
 
 ## Headline results
 
@@ -66,16 +70,17 @@ FPR 0.000** — a genuine train-synthetic / test-real result.
 | PR-AUC | 0.978 |
 | Accuracy | 0.929 |
 | False-positive rate | 0.011 |
-| Mean analysis latency | ~0.51 ms/script (p95 ≈ 0.95 ms) |
-| FPR vs ShellCheck baseline | **93.8% relative reduction** (0.011 vs 0.174) |
-| McNemar test vs ShellCheck | p ≈ 2×10⁻²¹ (significant) |
-| 5-fold CV F1 (stratified) | **0.904 ± 0.033** |
-| Leave-template-out CV F1 | **0.815 ± 0.191** |
-| Real-world holdout (train-synthetic → test-real) | **F1 0.950**, precision 1.000, FPR 0.000 (n=41) |
+| Mean analysis latency | ~0.52 ms/script (p95 ≈ 0.96 ms) |
+| 5-fold CV F1 (stratified, τ=0.5) | **0.887 ± 0.025** |
+| Leave-template-out CV F1 (τ=0.5) | **0.823 ± 0.101** |
+| Real-world holdout (train-synthetic → test-real) | **F1 0.895**, precision 1.000, FPR 0.000, ROC-AUC 0.990 (n=41) |
+| Learned TF-IDF baselines (real holdout) | F1 0.95–0.98 at FPR 0.05–0.30 — ACTE competitive, lowest FPR |
+| ShellCheck (a linter, not a security tool) | FPR 0.174, recall 0.079 — motivates the work, not a headline |
 
-Full tables (per-category detection, ablation study, cross-validation,
-bootstrap confidence intervals, latency percentiles, the McNemar significance
-test, the ShellCheck comparison, and the real-world external validation) are in
+Full tables (per-category detection, ablation study, cross-validation with the
+leave-template-out FPR, bootstrap confidence intervals, latency percentiles, the
+ShellCheck and learned-baseline comparisons, and the real-world external
+validation) are in
 [`experiments/results/results.md`](experiments/results/results.md) and the
 machine-readable [`experiments/results/results.json`](experiments/results/results.json).
 Figures are in [`experiments/figures/`](experiments/figures/).
@@ -113,6 +118,7 @@ in the module docstring of [`acte/trust_engine.py`](acte/trust_engine.py).
 | `experiments/` | Metrics, figures, ablation, ShellCheck baseline, latency, `run_all` |
 | `experiments/cross_validation.py` | Stratified + leave-template-out k-fold cross-validation |
 | `experiments/stats.py` | Bootstrap confidence intervals + exact McNemar test |
+| `experiments/ml_baselines.py` | RQ5: learned TF-IDF baselines (LogReg / SVM / RF) |
 | `experiments/real_world_eval.py` | RQ4: train-synthetic / test-real external validation |
 | `experiments/results/results.{json,md}` | Machine- and human-readable results |
 | `experiments/figures/*.png` | ROC, PR, ablation, cross-validation, real-world, comparison plots |
@@ -171,11 +177,10 @@ python -m pytest tests/ -q
   reproduces every classification metric exactly.
 * **Deterministic dataset.** `data/generate_dataset.py` regenerates a
   byte-identical corpus of 420 samples; no external data is fetched.
-* **Honest benchmark.** The corpus is synthetic but deliberately includes
-  *hard negatives* (safe scripts that use scary-looking commands) and *hard
-  positives* (genuinely dangerous payloads crafted to evade the finite signature
-  set), so reported metrics are not the product of a trivially separable
-  dataset. See [`data/PROVENANCE.md`](data/PROVENANCE.md).
+* **Deliberate difficulty.** The corpus is synthetic but includes *hard
+  negatives* (safe scripts that use scary-looking commands) and *hard positives*
+  (dangerous payloads crafted to evade the finite signature set), so the
+  benchmark is not trivially separable. See [`data/PROVENANCE.md`](data/PROVENANCE.md).
 * **Only latency varies** between runs, because it is a wall-clock measurement;
   all detection/ablation/baseline numbers are stable.
 
@@ -197,9 +202,14 @@ variants, and realistic sysadmin tasks. Ground-truth labels are binary
 * The training corpus is synthetic; absolute metrics are evidence about the
   *method* on a controlled corpus, not field-deployment numbers. The
   leave-template-out cross-validation and the 41-script real-world external
-  holdout (RQ4) narrow this gap — a synthetic-trained, frozen model still reaches
-  F1 = 0.950 on independently authored real scripts — but a large-scale field
-  study harvesting scripts from live LLM assistants remains future work.
+  holdout (RQ4) narrow this gap — a synthetic-trained, frozen model reaches
+  F1 = 0.895 (zero false positives) on independently authored real scripts — but
+  the corpus is author-generated, the signatures are author-written (a closed
+  loop we discuss openly in the paper's Threats to Validity), and a large-scale
+  field study with independent labelling remains essential future work.
+* There is no adaptive-attacker evaluation, and the model's monotonicity is a
+  double-edged property (it is also an evasion recipe); adversarial robustness is
+  an open problem, discussed in the paper.
 
 ## Author
 

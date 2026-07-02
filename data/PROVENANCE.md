@@ -77,8 +77,12 @@ SSH `authorized_keys` backdoors, cron persistence, obfuscated payloads) on the
 dangerous side. Each script's source and labeling rationale are documented
 inline in `data/real_world/build.py`, including the two deliberately hard cases
 (a trusted-vendor `curl | sh` installer and a legitimate privileged `apt`
-install). No real-world script is byte-identical to any synthetic training
-sample — a property enforced by `tests/test_dataset.py`. The RQ4 experiment
+install). To keep the holdout genuinely external, no real-world script is a
+near-duplicate of any training sample: the maximum sequence similarity to any
+synthetic script is 0.83, and `tests/test_dataset.py` fails the build if any
+holdout script exceeds 0.85 similarity. (Corpus deduplication itself uses a
+SHA-256 content hash rather than the salted built-in `hash()`, so membership is
+stable across runs and interpreters.) The RQ4 experiment
 (`experiments/real_world_eval.py`) trains ACTE on the full synthetic corpus,
 freezes it, and evaluates once on this holdout, giving a true train-synthetic /
 test-real generalization measurement.

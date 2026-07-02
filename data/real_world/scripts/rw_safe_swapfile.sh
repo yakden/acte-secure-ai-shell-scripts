@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+# Tune paging behaviour for a database host and persist it.
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/60-swap.conf
+echo 'vm.vfs_cache_pressure=50' | sudo tee -a /etc/sysctl.d/60-swap.conf
+sudo sysctl --system

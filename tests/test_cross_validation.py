@@ -60,6 +60,21 @@ def test_grouped_folds_have_both_classes(samples):
         assert labels == {0, 1}
 
 
+def test_grouped_folds_are_class_balanced(samples):
+    # Guard against the degenerate near-single-class folds a naive greedy
+    # grouping produced (e.g. 1 negative / 38 positives), which make per-fold
+    # precision/FPR meaningless. Every fold must hold a reasonable share of both.
+    folds = grouped_folds(samples, k=5, seed=1337)
+    total_pos = sum(s.label for s in samples)
+    total_neg = len(samples) - total_pos
+    for f in folds:
+        pos = sum(samples[i].label for i in f)
+        neg = len(f) - pos
+        # Each fold's positive share should be within a factor of ~2 of global.
+        assert 0.5 <= (pos / neg) / (total_pos / total_neg) <= 2.0, \
+            f"fold class balance off: pos={pos} neg={neg}"
+
+
 def test_run_cross_validation_shapes(samples):
     cv = run_cross_validation(samples, k=5, epochs=10, seed=1337)
     for scheme in ("stratified", "grouped_leave_template_out"):

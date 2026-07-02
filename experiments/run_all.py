@@ -33,10 +33,17 @@ from experiments import (
     cross_validation,
     figures,
     latency,
+    ml_baselines,
     real_world_eval,
     stats,
 )
-from experiments.dataset import load_samples, stratified_split, split_summary
+from experiments.dataset import (
+    REAL_WORLD_MANIFEST,
+    REAL_WORLD_OK,
+    load_samples,
+    stratified_split,
+    split_summary,
+)
 
 SEED = 1337
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -59,12 +66,12 @@ def main() -> int:
     print("=" * 70)
 
     # 1. dataset ------------------------------------------------------------
-    print("\n[1/9] Regenerating dataset (+ real-world holdout) ...")
+    print("\n[1/10] Regenerating dataset (+ real-world holdout) ...")
     records = generate_dataset.generate(verbose=True)
     real_world_build.build(verbose=True)
 
     # 2. load + split -------------------------------------------------------
-    print("\n[2/9] Loading and splitting ...")
+    print("\n[2/10] Loading and splitting ...")
     samples = load_samples()
     train, test = stratified_split(samples, test_fraction=TEST_FRACTION, seed=SEED)
     split = split_summary(train, test)
@@ -72,7 +79,7 @@ def main() -> int:
           % (split["n_train"], split["n_test"], split["test_positives"]))
 
     # 3. ACTE + ablation ----------------------------------------------------
-    print("\n[3/9] Training + evaluating ACTE and ablations ...")
+    print("\n[3/10] Training + evaluating ACTE and ablations ...")
     acte = acte_eval.run_full_and_ablation(train, test, epochs=EPOCHS, seed=SEED)
     full = acte["configs"]["full"]
     print("  ACTE(full): precision=%.3f recall=%.3f F1=%.3f MCC=%.3f acc=%.3f"
@@ -88,7 +95,7 @@ def main() -> int:
           % (boot["f1"]["ci_low"], boot["f1"]["ci_high"], boot["f1"]["point"]))
 
     # 4. cross-validation ---------------------------------------------------
-    print("\n[4/9] Cross-validating (stratified + leave-template-out) ...")
+    print("\n[4/10] Cross-validating (stratified + leave-template-out) ...")
     cv = cross_validation.run_cross_validation(
         samples, k=CV_FOLDS, epochs=EPOCHS, seed=SEED
     )
@@ -98,7 +105,7 @@ def main() -> int:
     print("  leave-template-out F1 = %.3f ± %.3f" % (cv_g["mean"], cv_g["std"]))
 
     # 5. figures ------------------------------------------------------------
-    print("\n[5/9] Rendering figures ...")
+    print("\n[5/10] Rendering figures ...")
     roc_path = os.path.join(FIGURES_DIR, "roc_curve.png")
     pr_path = os.path.join(FIGURES_DIR, "pr_curve.png")
     abl_path = os.path.join(FIGURES_DIR, "ablation_f1.png")
@@ -116,7 +123,7 @@ def main() -> int:
     print("  saved roc_curve.png, pr_curve.png, ablation_f1.png, cross_validation_f1.png")
 
     # 6. ShellCheck baseline + significance test ----------------------------
-    print("\n[6/9] Running ShellCheck baseline + McNemar test ...")
+    print("\n[6/10] Running ShellCheck baseline + McNemar test ...")
     baseline = baseline_shellcheck.evaluate_baseline(test)
     cmp_path = os.path.join(FIGURES_DIR, "baseline_comparison.png")
     mcnemar = None
@@ -140,13 +147,13 @@ def main() -> int:
               baseline.get("reason"))
 
     # 7. latency ------------------------------------------------------------
-    print("\n[7/9] Measuring latency ...")
+    print("\n[7/10] Measuring latency ...")
     lat = latency.measure_latency(samples, repeats=3, warmup=5)
     print("  mean=%.3f ms  median=%.3f ms  p95=%.3f ms"
           % (lat["mean_ms"], lat["median_ms"], lat["p95_ms"]))
 
     # 8. real-world external validation -------------------------------------
-    print("\n[8/9] Real-world external validation (train synthetic → test real) ...")
+    print("\n[8/10] Real-world external validation (train synthetic → test real) ...")
     real = real_world_eval.evaluate_real_world(epochs=EPOCHS, seed=SEED)
     rw_path = os.path.join(FIGURES_DIR, "real_world_validation.png")
     if real.get("available"):
@@ -159,8 +166,23 @@ def main() -> int:
     else:
         print("  real-world validation skipped:", real.get("reason"))
 
-    # 9. write results ------------------------------------------------------
-    print("\n[9/9] Writing results ...")
+    # 9. learned ML baselines (RQ5) -----------------------------------------
+    print("\n[9/10] Training learned baselines (TF-IDF + LogReg/SVM/RF) ...")
+    real_samples = load_samples(REAL_WORLD_MANIFEST) if REAL_WORLD_OK else None
+    ml = ml_baselines.evaluate_baselines(train, test, real_samples, seed=SEED)
+    for name, m in ml["on_synthetic_test"].items():
+        print("  %-24s test F1=%.3f FPR=%.3f" % (name, m["f1"], m["false_positive_rate"]))
+    ml_path = os.path.join(FIGURES_DIR, "ml_baselines.png")
+    if ml["on_real_world"]:
+        det = ["ACTE"] + list(ml["on_real_world"].keys())
+        f1s = [real["metrics"]["f1"]] + [ml["on_real_world"][k]["f1"] for k in ml["on_real_world"]]
+        fprs = [real["metrics"]["false_positive_rate"]] + \
+               [ml["on_real_world"][k]["false_positive_rate"] for k in ml["on_real_world"]]
+        figures.plot_ml_baselines(det, f1s, fprs, ml_path)
+        print("  saved ml_baselines.png")
+
+    # 10. write results -----------------------------------------------------
+    print("\n[10/10] Writing results ...")
     results = {
         "meta": _meta(split, records),
         "rq1_detection": {
@@ -174,6 +196,7 @@ def main() -> int:
         "rq3_baseline": baseline,
         "rq3_significance": mcnemar,
         "rq4_real_world": real,
+        "rq5_ml_baselines": ml,
     }
     results_json = os.path.join(RESULTS_DIR, "results.json")
     with open(results_json, "w", encoding="utf-8") as fh:
@@ -248,7 +271,8 @@ def _print_key_numbers(full, baseline, lat, acte, cv, real, boot, mcnemar):
     if real.get("available"):
         rm = real["metrics"]
         print(f"  RQ4  real-world F1={rm['f1']:.3f}  precision={rm['precision']:.3f}  "
-              f"recall={rm['recall']:.3f}  FPR={rm['false_positive_rate']:.3f}")
+              f"recall={rm['recall']:.3f}  FPR={rm['false_positive_rate']:.3f}  "
+              f"ROC-AUC={rm.get('roc_auc', float('nan')):.3f}")
 
 
 # --------------------------------------------------------------------------- #
@@ -366,14 +390,19 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
         L.append("A single held-out split gives one number with no spread. Below, "
                  f"the full ACTE protocol is repeated inside {cv['stratified']['k']}-fold "
                  "cross-validation under two schemes, reported as **mean ± std** "
-                 "across folds.\n")
-        L.append("- **Stratified k-fold** — folds balanced by (category, label); "
-                 "estimates generalization to new samples from the same distribution.")
-        L.append(f"- **Leave-template-out k-fold** — folds split by generating "
-                 f"template (of {cv['n_templates']} templates), so no template appears "
-                 "in both train and test; the harder test of generalization to "
-                 "unseen script structures, and the direct rebuttal to the "
-                 "'template memorization' objection.\n")
+                 "across folds. To avoid the variance that F1-optimal threshold "
+                 "tuning introduces on small per-fold partitions, every fold here "
+                 "uses the fixed default operating point (τ = 0.5); the tuned "
+                 "single-split operating point of RQ1 is reported separately.\n")
+        L.append("- **Stratified k-fold** (scikit-learn `StratifiedKFold`) — folds "
+                 "preserve the label ratio; estimates generalization to new samples "
+                 "from the same distribution.")
+        L.append(f"- **Leave-template-out k-fold** (`StratifiedGroupKFold` over "
+                 f"{cv['n_templates']} templates) — no template contributes scripts to "
+                 "both the training and evaluation fold, so the model is scored on "
+                 "template structures it never trained on. This is the harder test "
+                 "and it substantially weakens (though does not eliminate) the "
+                 "'template-memorization' concern for a synthetic corpus.\n")
         L.append("| Scheme | Precision | Recall | F1 | MCC | ROC-AUC | FPR |")
         L.append("|---|---|---|---|---|---|---|")
         for label, key in (("Stratified k-fold", "stratified"),
@@ -490,6 +519,54 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
         else:
             L.append("No misclassifications on the real-world holdout.\n")
 
+    # RQ5 — learned baselines
+    ml = results.get("rq5_ml_baselines")
+    if ml:
+        L.append("## RQ5 — Comparison with learned text-classifier baselines\n")
+        L.append("ShellCheck (RQ3) is a linter, not a security classifier, so the "
+                 "more demanding comparison is against off-the-shelf supervised text "
+                 "classifiers trained on the same labels: TF-IDF (word 1–2 grams + "
+                 "char 3–5 grams) feeding Logistic Regression, a linear SVM, and a "
+                 "Random Forest. We report performance on the synthetic test split "
+                 "and, more importantly, on the independent real-world holdout after "
+                 "training on the full synthetic corpus.\n")
+        acte_rw = results.get("rq4_real_world", {}).get("metrics", {})
+        L.append("**Synthetic test split:**\n")
+        L.append("| Detector | Precision | Recall | F1 | ROC-AUC | FPR |")
+        L.append("|---|---|---|---|---|---|")
+        L.append(f"| ACTE (full) | {_fmt(full['precision'],3)} | {_fmt(full['recall'],3)} | "
+                 f"{_fmt(full['f1'],3)} | {_fmt(full.get('roc_auc'),3)} | "
+                 f"{_fmt(full['false_positive_rate'],3)} |")
+        for name, m in ml["on_synthetic_test"].items():
+            L.append(f"| {name} | {_fmt(m['precision'],3)} | {_fmt(m['recall'],3)} | "
+                     f"{_fmt(m['f1'],3)} | {_fmt(m.get('roc_auc'),3)} | "
+                     f"{_fmt(m['false_positive_rate'],3)} |")
+        L.append("")
+        if ml["on_real_world"]:
+            L.append("**Real-world holdout (trained on full synthetic corpus):**\n")
+            L.append("| Detector | Precision | Recall | F1 | ROC-AUC | FPR |")
+            L.append("|---|---|---|---|---|---|")
+            if acte_rw:
+                L.append(f"| ACTE (full) | {_fmt(acte_rw['precision'],3)} | "
+                         f"{_fmt(acte_rw['recall'],3)} | {_fmt(acte_rw['f1'],3)} | "
+                         f"{_fmt(acte_rw.get('roc_auc'),3)} | "
+                         f"{_fmt(acte_rw['false_positive_rate'],3)} |")
+            for name, m in ml["on_real_world"].items():
+                L.append(f"| {name} | {_fmt(m['precision'],3)} | {_fmt(m['recall'],3)} | "
+                         f"{_fmt(m['f1'],3)} | {_fmt(m.get('roc_auc'),3)} | "
+                         f"{_fmt(m['false_positive_rate'],3)} |")
+            L.append("")
+        L.append("The linear text classifiers are competitive with, and on raw F1 "
+                 "sometimes exceed, ACTE — a candid finding. ACTE's advantage is not "
+                 "a higher F1 but (i) the lowest false-positive rate, which is the "
+                 "operational cost of a gate; (ii) a 13-feature model whose every "
+                 "decision is attributable, versus thousands of opaque lexical "
+                 "weights (the LogReg baseline keys on bare tokens such as `rf` and "
+                 "on distributional artifacts of the corpus); (iii) sub-millisecond "
+                 "online adaptation from a single label, where a fitted TF-IDF "
+                 "vocabulary is frozen; and (iv) the automatic synthesis of an "
+                 "enforcement policy, which a bare classifier does not produce.\n")
+
     # Figures
     L.append("## Figures\n")
     L.append("- `../figures/roc_curve.png` — ROC curve (ACTE, test set)")
@@ -500,6 +577,8 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
         L.append("- `../figures/baseline_comparison.png` — ACTE vs ShellCheck")
     if results.get("rq4_real_world", {}).get("available"):
         L.append("- `../figures/real_world_validation.png` — real-world external validation")
+    if results.get("rq5_ml_baselines", {}).get("on_real_world"):
+        L.append("- `../figures/ml_baselines.png` — ACTE vs learned baselines (real-world holdout)")
     L.append("")
     return "\n".join(L)
 
