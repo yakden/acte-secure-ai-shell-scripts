@@ -9,6 +9,8 @@ from typing import Dict, List, Tuple
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 MANIFEST = os.path.join(DATA_DIR, "manifest.jsonl")
+REAL_WORLD_MANIFEST = os.path.join(DATA_DIR, "real_world", "manifest.jsonl")
+REAL_WORLD_OK = os.path.exists(REAL_WORLD_MANIFEST)
 
 
 @dataclass
@@ -19,12 +21,18 @@ class Sample:
     rationale: str
     path: str          # absolute path to the .sh file
     script: str        # the script contents
+    template: str = "unknown"   # generating-template id (for grouped CV)
 
 
-def load_samples() -> List[Sample]:
-    """Load every sample described in the manifest, reading its script body."""
+def load_samples(manifest: str = MANIFEST) -> List[Sample]:
+    """Load every sample described in ``manifest``, reading its script body.
+
+    ``path`` fields in the manifest are interpreted relative to the top-level
+    ``data/`` directory, so both the synthetic corpus and the real-world holdout
+    (whose manifest lives in ``data/real_world/``) load with the same code.
+    """
     samples: List[Sample] = []
-    with open(MANIFEST, "r", encoding="utf-8") as fh:
+    with open(manifest, "r", encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
             if not line:
@@ -42,6 +50,7 @@ def load_samples() -> List[Sample]:
                     rationale=rec.get("rationale", ""),
                     path=abs_path,
                     script=script,
+                    template=rec.get("template", "unknown"),
                 )
             )
     return samples

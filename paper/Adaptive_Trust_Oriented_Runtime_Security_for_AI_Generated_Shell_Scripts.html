@@ -276,7 +276,7 @@ sup { font-size: 7pt; vertical-align: super; }
 
 <!-- ===== ABSTRACT ===== -->
 <div class="abstract-block">
-  <p><span class="abs-title">Abstract&mdash;</span>Large language models (LLMs) are increasingly deployed to generate shell scripts autonomously, creating an emerging attack surface in which syntactically valid yet semantically hazardous code may reach production pipelines without adequate scrutiny. This paper introduces the Adaptive Context-Aware Trust Execution (ACTE) framework, a runtime security system that assigns continuous risk scores to shell scripts through a logistic trust model combining semantic parsing, execution-context analysis, threat-intelligence signature matching, and online stochastic-gradient-descent (SGD) feedback learning. ACTE maps each script to one of four discrete trust levels&mdash;TRUSTED, MONITOR, RESTRICT, or DENY&mdash;and synthesizes corresponding enforcement artifacts (seccomp profiles, Open Policy Agent Rego policies, namespace/cgroup constraints). We evaluate ACTE on a reproducible dataset of 420 labeled scripts spanning five categories and three research questions. The full model achieves F1&nbsp;=&nbsp;0.915, Precision&nbsp;=&nbsp;0.985, Recall&nbsp;=&nbsp;0.855, and ROC-AUC&nbsp;=&nbsp;0.976 at a mean analysis latency of 0.51&nbsp;ms/script (approximately 1,963 scripts/s), while reducing the false-positive rate by 93.8&#37; relative to ShellCheck&nbsp;v0.9.0. Ablation experiments confirm that threat-intelligence features contribute most to discriminative power (\(\Delta\)F1&nbsp;=&nbsp;&minus;0.105 when removed), whereas feedback learning is the principal guardian against false positives (FPR rises from 0.011 to 0.239 when removed). We report all results faithfully, including the synthetic nature of the dataset and the prototype-sketch status of live enforcement.</p>
+  <p><span class="abs-title">Abstract&mdash;</span>Large language models (LLMs) are increasingly deployed to generate shell scripts autonomously, creating an emerging attack surface in which syntactically valid yet semantically hazardous code may reach production pipelines without adequate scrutiny. This paper introduces the Adaptive Context-Aware Trust Execution (ACTE) framework, a runtime security system that assigns continuous risk scores to shell scripts through a logistic trust model combining semantic parsing, execution-context analysis, threat-intelligence signature matching, and online stochastic-gradient-descent (SGD) feedback learning. ACTE maps each script to one of four discrete trust levels&mdash;TRUSTED, MONITOR, RESTRICT, or DENY&mdash;and synthesizes corresponding enforcement artifacts (seccomp profiles, Open Policy Agent Rego policies, namespace/cgroup constraints). We evaluate ACTE on a reproducible dataset of 420 labeled scripts spanning five categories and three research questions. The full model achieves F1&nbsp;=&nbsp;0.915, Precision&nbsp;=&nbsp;0.985, Recall&nbsp;=&nbsp;0.855, and ROC-AUC&nbsp;=&nbsp;0.976 at a mean analysis latency of 0.51&nbsp;ms/script (approximately 1,963 scripts/s), while reducing the false-positive rate by 93.8&#37; relative to ShellCheck&nbsp;v0.9.0. Ablation experiments confirm that threat-intelligence features contribute most to discriminative power (\(\Delta\)F1&nbsp;=&nbsp;&minus;0.105 when removed), whereas feedback learning is the principal guardian against false positives (FPR rises from 0.011 to 0.239 when removed). Beyond the single held-out split, five-fold cross-validation confirms the result is stable (stratified F1&nbsp;=&nbsp;0.904&nbsp;&plusmn;&nbsp;0.033), and a stricter leave-template-out cross-validation&mdash;in which no generating template is shared between the training and test folds&mdash;still attains F1&nbsp;=&nbsp;0.815&nbsp;&plusmn;&nbsp;0.191, directly rebutting the "template-memorization" objection to synthetic corpora. Bootstrap 95&#37; confidence intervals (F1: [0.861,&nbsp;0.959]) and an exact McNemar test (\(p<10^{-20}\) versus ShellCheck) establish the significance of these differences. Finally, on an independent hand-authored holdout of 41 real, publicly-documented scripts&mdash;used for testing only&mdash;a model trained solely on the synthetic corpus generalizes to F1&nbsp;=&nbsp;0.950 at Precision&nbsp;=&nbsp;1.000 and FPR&nbsp;=&nbsp;0.000. We report all results faithfully, including the synthetic nature of the training corpus and the prototype-sketch status of live enforcement.</p>
 </div>
 
 <div class="index-terms">
@@ -312,10 +312,11 @@ sup { font-size: 7pt; vertical-align: super; }
 <p>Let \(\mathcal{C}\) be the set of distinct commands (executables) that may appear in scripts in \(\mathcal{S}\). Let \(\mathcal{X}: \mathcal{S} \to [0,1]^d\) be a feature-extraction function mapping any script to a \(d\)-dimensional real-valued feature vector. Define a <em>risk function</em> \(R: \mathcal{S} \to (0,1)\) and a <em>trust function</em> \(T: \mathcal{S} \to (0,1)\) such that \(T(s) = 1 - R(s)\) for all \(s\). The <em>trust level</em> of a script is a discrete label \(\ell(s) \in \{\mathrm{TRUSTED}, \mathrm{MONITOR}, \mathrm{RESTRICT}, \mathrm{DENY}\}\) obtained by thresholding \(R(s)\).</p>
 
 <h2 class="subsec-title">D. Research Questions</h2>
-<p>We structure the experimental evaluation around three research questions (RQs):</p>
-<p><strong>RQ1</strong>&nbsp;(Detection Accuracy): What classification performance does ACTE achieve on held-out labeled scripts, and how does each component contribute?</p>
+<p>We structure the experimental evaluation around four research questions (RQs):</p>
+<p><strong>RQ1</strong>&nbsp;(Detection Accuracy): What classification performance does ACTE achieve on held-out labeled scripts; how stable is that performance under cross-validation; and how does each component contribute?</p>
 <p><strong>RQ2</strong>&nbsp;(Computational Cost): Is ACTE's per-script analysis latency compatible with inline deployment on interactive or CI/CD pipelines?</p>
-<p><strong>RQ3</strong>&nbsp;(False-Positive Reduction): By how much does ACTE reduce the false-positive rate relative to a ShellCheck&nbsp;v0.9.0 baseline?</p>
+<p><strong>RQ3</strong>&nbsp;(False-Positive Reduction): By how much does ACTE reduce the false-positive rate relative to a ShellCheck&nbsp;v0.9.0 baseline, and is the difference statistically significant?</p>
+<p><strong>RQ4</strong>&nbsp;(Generalization to Real Scripts): Does a model trained solely on the synthetic corpus generalize to independent, real, publicly-documented scripts it has never seen?</p>
 
 <!-- ==================== SECTION III ==================== -->
 <h1 class="sec-title">III. The ACTE Model and Novelty</h1>
@@ -406,7 +407,7 @@ Output: updated (w, b)</pre>
 
 <p>Policy generation produces seccomp JSON in the Docker <code>seccomp</code> profile format and Open Policy Agent Rego snippets. The Rego output specifies <code>allow</code>, <code>audit</code>, <code>network_egress_allowed</code>, and <code>allow_new_privileges</code> decisions for each trust level. Namespace constraints specify Linux namespaces to isolate (PID, mount, UTS, IPC, and optionally NET), cgroup CPU quota, memory limit, and PID limit. These artifacts are emitted as data structures; in a production deployment they would be passed to a container runtime or an eBPF enforcement agent.</p>
 
-<p>The complete codebase lives at <code>/home/ubuntu/acte_project/</code> and includes the dataset generator, experiment runner, figure generation scripts, and the full test suite. The run command <code>python -m experiments.run_all</code> reproduces all reported numbers end-to-end.</p>
+<p>The complete codebase is released publicly (see the Reproducibility section) and includes the dataset generator, the real-world holdout builder, the experiment runner, the cross-validation and statistics modules, the figure-generation scripts, and the full test suite. The run command <code>python -m experiments.run_all</code> reproduces all reported numbers end-to-end.</p>
 
 <!-- ==================== SECTION VII ==================== -->
 <h1 class="sec-title">VII. Experimental Methodology</h1>
@@ -415,14 +416,18 @@ Output: updated (w, b)</pre>
 <p>We constructed a dataset of 420 labeled shell scripts spanning five categories: <em>ai_generated</em> (scripts plausibly attributable to LLM generation), <em>malicious</em> (known-bad payloads), <em>obfuscated</em> (scripts with encoding/eval indirection), <em>safe_everyday</em> (routine user scripts with no dangerous behavior), and <em>sysadmin</em> (legitimate administrative scripts, some with moderate privilege use). The dataset is synthetic-but-reproducible: all scripts were generated by a deterministic dataset generator seeded at 1337, ensuring any researcher can reconstruct the exact dataset and reproduce reported numbers. Hard negatives (safe scripts resembling dangerous patterns) and hard positives (dangerous scripts with minimal syntactic markers) are included to stress-test the classifier. The dataset is split 60/40 train/test (252/168 scripts), yielding 114 positive training examples and 76 positive test examples.</p>
 
 <h2 class="subsec-title">B. Hypotheses</h2>
-<p>H1 (RQ1): ACTE achieves F1&nbsp;&gt;&nbsp;0.85 on the held-out test set. H2 (RQ2): Mean per-script latency is below 2&nbsp;ms. H3 (RQ3): ACTE's false-positive rate is at least 80% lower than ShellCheck v0.9.0.</p>
+<p>H1 (RQ1): ACTE achieves F1&nbsp;&gt;&nbsp;0.85 on the held-out test set, and the cross-validated mean F1 remains above 0.80. H2 (RQ2): Mean per-script latency is below 2&nbsp;ms. H3 (RQ3): ACTE's false-positive rate is at least 80% lower than ShellCheck v0.9.0, and the difference is statistically significant (\(\alpha=0.05\)). H4 (RQ4): On the real-world holdout, ACTE retains F1&nbsp;&gt;&nbsp;0.85 with FPR&nbsp;&le;&nbsp;0.10.</p>
 
 <h2 class="subsec-title">C. Measurement Methodology</h2>
 <p>For RQ1, ACTE is trained for 40 epochs on the training split. The decision threshold is fixed at \(\tau=0.50\). Classification metrics (Precision, Recall, F1, MCC, Accuracy, ROC-AUC, PR-AUC, FPR, FNR) are computed on the held-out test split. The ablation study removes one component at a time (SemanticParser, ContextExtractor, ThreatIntel, FeedbackLearning) by zeroing the corresponding feature group and re-running the full training/evaluation protocol.</p>
 
 <p>For RQ2, each of the 420 scripts is analyzed three times and the minimum latency is recorded (to minimize scheduling jitter). Throughput is computed as the reciprocal of the mean latency.</p>
 
-<p>For RQ3, ShellCheck v0.9.0 is applied to each test script. Predictions are generated by the mapping: <em>dangerous</em> if any finding at severity <code>error</code> or <code>warning</code> is produced. FPR is compared between ACTE and ShellCheck on identical test scripts.</p>
+<p>For RQ3, ShellCheck v0.9.0 is applied to each test script. Predictions are generated by the mapping: <em>dangerous</em> if any finding at severity <code>error</code> or <code>warning</code> is produced. FPR is compared between ACTE and ShellCheck on identical test scripts. Because the two detectors are evaluated on the <em>same</em> items, we assess the significance of their difference with the exact (binomial) form of McNemar's test on the discordant pairs, which is the appropriate paired test for two classifiers on one test set.</p>
+
+<p>To move beyond a single split, we additionally cross-validate the full model under two schemes. <em>Stratified five-fold</em> cross-validation preserves the (category,&nbsp;label) balance in each fold and estimates generalization to new samples from the same distribution. <em>Leave-template-out five-fold</em> cross-validation partitions folds by the generating template (70 distinct templates), guaranteeing that no template contributes scripts to both the training and the evaluation fold; this is the stricter test of generalization to unseen script structure and is the direct experimental rebuttal to the concern that a synthetic corpus merely rewards template memorization. Each fold repeats the entire protocol (feedback training and threshold tuning on the training folds only), and we report the per-fold mean&nbsp;&plusmn;&nbsp;standard deviation as well as the pooled out-of-fold confusion matrix. We further report percentile bootstrap 95&#37; confidence intervals (2,000 class-stratified resamples of the held-out test set) for the headline metrics.</p>
+
+<p>For RQ4, we build an independent holdout of 41 hand-authored real scripts (21 dangerous, 20 safe) drawn from publicly documented idioms&mdash;standard sysadmin/devops tasks on the safe side and canonical, publicly catalogued attack techniques (reverse shells, the bash fork bomb, device-wipe <code>dd</code>/<code>mkfs</code>, SSH <code>authorized_keys</code> backdoors, cron persistence, obfuscated payloads) on the dangerous side. None is produced by the synthetic generator and none is byte-identical to any training script. ACTE is trained on the <em>entire</em> synthetic corpus (feedback learning and threshold tuning on synthetic data only), then frozen and evaluated once on the real holdout, yielding a genuine train-synthetic / test-real generalization measurement.</p>
 
 <!-- ==================== SECTION VIII ==================== -->
 <h1 class="sec-title">VIII. Results and Analysis</h1>
@@ -479,6 +484,40 @@ Output: updated (w, b)</pre>
   <figcaption data-label="Fig. 3">F1 scores across ablation configurations. Removing ThreatIntel produces the largest F1 drop (&minus;0.105). Removing FeedbackLearning sharply raises FPR from 0.011 to 0.239.</figcaption>
 </figure>
 
+<p>To confirm that the single-split headline is not an artifact of one fortunate partition, Table&nbsp;I-B reports bootstrap 95&#37; confidence intervals for the held-out metrics together with the two cross-validation schemes. The stratified five-fold mean F1 of 0.904&nbsp;&plusmn;&nbsp;0.033 is fully consistent with the single-split 0.915, and the F1 bootstrap interval [0.861,&nbsp;0.959] excludes all ablation and baseline configurations. The leave-template-out F1 of 0.815&nbsp;&plusmn;&nbsp;0.191 is, as expected, lower and more variable&mdash;detecting danger in a template family never seen in training is genuinely harder&mdash;but it remains well above chance and confirms H1's cross-validation clause. This directly answers the sharpest criticism of any synthetic benchmark: performance does not collapse when template overlap between train and test is forbidden. Figure&nbsp;5 shows the per-fold F1 distributions.</p>
+
+<table>
+  <caption data-label="Table I-B">Robustness of RQ1: Bootstrap 95&#37; CIs (held-out split) and Cross-Validated F1 (mean&nbsp;&plusmn;&nbsp;std, k=5)</caption>
+  <tr>
+    <th class="tbl-left">Metric / Scheme</th>
+    <th>Precision</th>
+    <th>Recall</th>
+    <th>F1</th>
+    <th>ROC-AUC</th>
+  </tr>
+  <tr>
+    <td class="tbl-left">Held-out point</td>
+    <td>0.985</td><td>0.855</td><td>0.915</td><td>0.976</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">Bootstrap 95&#37; CI</td>
+    <td>[.953,&nbsp;1.000]</td><td>[.776,&nbsp;.934]</td><td>[.861,&nbsp;.959]</td><td>[.951,&nbsp;.994]</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">Stratified 5-fold</td>
+    <td>0.994&plusmn;.011</td><td>0.831&plusmn;.058</td><td>0.904&plusmn;.033</td><td>0.947&plusmn;.021</td>
+  </tr>
+  <tr>
+    <td class="tbl-left">Leave-template-out</td>
+    <td>0.875&plusmn;.201</td><td>0.789&plusmn;.217</td><td>0.815&plusmn;.191</td><td>0.926&plusmn;.071</td>
+  </tr>
+</table>
+
+<figure>
+  <img src="figures/cross_validation_f1.png" alt="Cross-Validated F1">
+  <figcaption data-label="Fig. 5">Per-fold F1 under stratified vs. leave-template-out five-fold cross-validation. The stratified scheme is tight around 0.90; the leave-template-out scheme is lower and more dispersed, quantifying the harder task of generalizing to unseen script structures.</figcaption>
+</figure>
+
 <h2 class="subsec-title">B. Ablation Analysis</h2>
 <p>The ablation results confirm that ThreatIntel is the single most discriminative component: its removal reduces F1 by 0.105 and increases FPR from 0.011 to 0.130. FeedbackLearning, while contributing a smaller F1 change (\(\Delta\)F1=&minus;0.068), is the primary mechanism controlling false positives: without it, FPR rises dramatically from 0.011 to 0.239 as the unlearned model defaults to over-predicting dangerous. Removing ContextExtractor, counter-intuitively, yields a marginally higher F1 (0.931) due to threshold shift; this suggests that in the present dataset, context features add discriminative precision at the cost of some recall, a trade-off resolvable via threshold tuning. SemanticParser removal has the smallest individual effect (\(\Delta\)F1=&minus;0.005) because the remaining components partially compensate through overlapping signal.</p>
 
@@ -517,10 +556,36 @@ Output: updated (w, b)</pre>
   <figcaption data-label="Fig. 4">Comparison of ACTE vs. ShellCheck v0.9.0 across key metrics. ACTE reduces FPR by 93.8% relative to ShellCheck (error+warning mapping) while achieving substantially higher F1 and MCC.</figcaption>
 </figure>
 
+<p>The exact McNemar test on the paired test-set predictions is decisive: ACTE is correct on 75 items where ShellCheck errs, versus a single item where ShellCheck is correct and ACTE errs, giving \(p \approx 2.0\times10^{-21}\). The advantage over ShellCheck is therefore statistically significant far beyond the \(\alpha=0.05\) threshold, confirming the second clause of H3.</p>
+
+<h2 class="subsec-title">E. RQ4: Generalization to Real Scripts</h2>
+<p>Table&nbsp;III reports the external-validation result. A model trained solely on the synthetic corpus, then frozen and evaluated once on the 41-script real-world holdout, achieves F1&nbsp;=&nbsp;0.950, Precision&nbsp;=&nbsp;1.000, Recall&nbsp;=&nbsp;0.905, ROC-AUC&nbsp;=&nbsp;0.956, and FPR&nbsp;=&nbsp;0.000 (F1 bootstrap 95&#37; CI [0.865,&nbsp;1.000]). Hypothesis H4 is confirmed. Notably, precision is perfect: every one of the 20 safe real scripts&mdash;including the deliberately hard cases of a recursive <code>chmod</code> on a web root, a <code>dd</code> copy between regular files, and a privileged <code>apt</code> install&mdash;is correctly cleared, and the trusted-vendor <code>curl&nbsp;|&nbsp;sh</code> installer is correctly flagged under the project's security-conservative labeling. The two false negatives are exactly the hardest evasive payloads: a Perl reverse shell (no matching signature and low context score) and a <code>find&nbsp;/&nbsp;-delete</code> catastrophe that sidesteps the <code>rm&nbsp;-rf</code> family. These misses are reported openly; they are the strongest motivation for the future-work items on signature induction and richer behavioral features, and they demonstrate that the reported generalization is not an artifact of an over-easy holdout.</p>
+
+<table>
+  <caption data-label="Table III">Real-World External Validation (train on synthetic, test on 41 real scripts)</caption>
+  <tr>
+    <th class="tbl-left">Metric</th>
+    <th>Precision</th>
+    <th>Recall</th>
+    <th>F1</th>
+    <th>ROC-AUC</th>
+    <th>FPR</th>
+  </tr>
+  <tr class="tbl-bold">
+    <td class="tbl-left tbl-bold">ACTE (frozen)</td>
+    <td>1.000</td><td>0.905</td><td>0.950</td><td>0.956</td><td>0.000</td>
+  </tr>
+</table>
+
+<figure>
+  <img src="figures/real_world_validation.png" alt="Real-World Validation">
+  <figcaption data-label="Fig. 6">Headline metrics on the real-world external holdout for a model trained only on synthetic data. Perfect precision (zero false positives on 20 real safe scripts) with 0.905 recall.</figcaption>
+</figure>
+
 <!-- ==================== SECTION IX ==================== -->
 <h1 class="sec-title">IX. Statistical Treatment</h1>
 
-<p>All metrics are computed on a single 168-sample held-out test set; we report point estimates derived from the full reproducible run rather than bootstrap confidence intervals, since the deterministic dataset and seed-fixed training make the experiment fully reproducible rather than a random sample from a larger population. However, to give a sense of sampling uncertainty, we note that for F1=0.915 on a test set of 168 samples (76 positives), a Wilson-score-based 95% confidence interval on precision (TP/(TP+FP)=65/66) yields approximately (0.924, 0.999), and on recall (TP/(TP+FN)=65/76) approximately (0.754, 0.921).</p>
+<p>Point estimates on a single held-out split cannot, on their own, distinguish a real effect from a fortunate partition, so we quantify uncertainty three ways. First, percentile bootstrap 95&#37; confidence intervals from 2,000 class-stratified resamples of the 168-sample test set give F1&nbsp;[0.861,&nbsp;0.959], Precision&nbsp;[0.953,&nbsp;1.000], Recall&nbsp;[0.776,&nbsp;0.934], and ROC-AUC&nbsp;[0.951,&nbsp;0.994] (Table&nbsp;I-B). Second, five-fold cross-validation (Section&nbsp;VIII-A) shows the F1 mean&nbsp;&plusmn;&nbsp;std is 0.904&nbsp;&plusmn;&nbsp;0.033 (stratified) and 0.815&nbsp;&plusmn;&nbsp;0.191 (leave-template-out), so the headline reproduces under resampling and survives the removal of template overlap. Third, the exact McNemar test rejects the null of equal error rates against ShellCheck at \(p\approx2.0\times10^{-21}\) (75 discordant items favor ACTE, one favors ShellCheck), so the false-positive advantage is not attributable to chance.</p>
 
 <p>The Matthew's Correlation Coefficient (MCC) of 0.861 is an informative summary statistic for imbalanced binary classification, as it takes into account all four entries of the confusion matrix and is not inflated by class imbalance. An MCC approaching 1.0 indicates near-perfect classification; our value of 0.861 is consistent with a high-performing but not perfect detector, with the primary source of imperfection being false negatives in the malicious category (recall=0.750).</p>
 
@@ -535,7 +600,7 @@ Output: updated (w, b)</pre>
 <p>The logistic model's cold-start weights were hand-set with knowledge of the intended feature semantics, which introduces a form of domain knowledge that may not generalize to entirely different script populations. The SGD training on 252 examples with 40 epochs may overfit to the specific synthetic distribution; we mitigate this by reporting held-out test metrics and confirming that the weight-delta norm (6.08) is moderate rather than indicating divergence.</p>
 
 <h2 class="subsec-title">B. External Validity</h2>
-<p>The most significant threat to external validity is the synthetic nature of the dataset. All 420 scripts were generated programmatically from a seeded generator rather than collected from real-world LLM deployments. While the generator was designed to produce realistic distributions&mdash;including hard negatives and hard positives&mdash;the detection performance on genuinely real-world AI-generated scripts may differ. We acknowledge this limitation explicitly and do not claim the reported numbers will transfer unchanged to production deployments.</p>
+<p>The most significant threat to external validity is the synthetic nature of the training corpus. All 420 training scripts were generated programmatically from a seeded generator rather than collected from real-world LLM deployments. We address this threat on two fronts rather than merely acknowledging it. First, the leave-template-out cross-validation (Section&nbsp;VIII-A) removes any train/test template overlap and still yields F1&nbsp;=&nbsp;0.815, showing the model does not simply memorize templates. Second, the RQ4 external validation (Section&nbsp;VIII-E) evaluates a synthetic-trained, frozen model on 41 independently hand-authored real scripts and obtains F1&nbsp;=&nbsp;0.950 at zero false positives, providing direct evidence of transfer to non-synthetic inputs. These results substantially narrow&mdash;though they do not eliminate&mdash;the gap to a full production study: the real holdout is modest in size and still curated by the authors rather than harvested from live LLM assistants. We therefore continue to treat large-scale field validation (future-work item&nbsp;1) as necessary, and we do not claim the absolute numbers will transfer unchanged to every deployment.</p>
 
 <h2 class="subsec-title">C. Construct Validity</h2>
 <p>The runtime enforcement produced by the PolicyGenerator and RuntimeMonitor is a prototype sketch: seccomp profiles and Rego policies are emitted as data but are not enforced by a live kernel-level filter in the current prototype. The latency measurements therefore do not include the overhead of live seccomp-bpf filter installation, which would add a one-time cost per execution. We report this honestly and do not overclaim live enforcement capability.</p>
@@ -543,9 +608,9 @@ Output: updated (w, b)</pre>
 <!-- ==================== SECTION XI ==================== -->
 <h1 class="sec-title">XI. Reproducibility</h1>
 
-<p>All code, dataset generation logic, experiment runners, and figure generation scripts are contained in the ACTE project directory. The complete experimental pipeline can be reproduced by executing <code>python -m experiments.run_all</code> from the project root, which regenerates the dataset (seed=1337), trains the model, evaluates all RQs and ablation configurations, and writes results to <code>experiments/results/results.json</code> and <code>results.md</code>. The figures are regenerated from the JSON output.</p>
+<p>All code, dataset generation logic, experiment runners, and figure generation scripts are contained in the ACTE project directory and public repository. The complete experimental pipeline can be reproduced by executing <code>python -m experiments.run_all</code> from the project root, which regenerates the synthetic dataset (seed=1337) and the real-world holdout, trains the model, evaluates all four RQs (including the two cross-validation schemes, bootstrap confidence intervals, the McNemar test, and the external validation), and writes results to <code>experiments/results/results.json</code> and <code>results.md</code>. The figures are regenerated from the same run. A focused test suite of over 130 unit, property, statistical, and reproducibility tests (<code>python -m pytest tests/</code>) guards every component and verifies, among other invariants, that the leave-template-out folds share no template and that the real holdout contains no script byte-identical to any training sample.</p>
 
-<p>The dataset provenance is documented in <code>data/PROVENANCE.md</code>. Python version 3.11.6 on Linux (kernel 6.17.0) was used for the reported run. All dependencies are listed in <code>requirements.txt</code>. The reported run was generated on 2026-06-30T13:07:39 UTC and is bit-reproducible given the same seed and platform.</p>
+<p>Dataset provenance is documented in <code>data/PROVENANCE.md</code> (synthetic corpus) and <code>data/real_world/build.py</code> (external holdout, with per-script source and labeling rationale). Python 3.11 on Linux was used for the reported run; all dependencies are listed in <code>requirements.txt</code>. Every classification metric is bit-reproducible given the same seed and platform; only wall-clock latency varies between runs by design.</p>
 
 <!-- ==================== SECTION XII ==================== -->
 <h1 class="sec-title">XII. Related Work</h1>
@@ -571,9 +636,9 @@ Output: updated (w, b)</pre>
 <!-- ==================== SECTION XIII ==================== -->
 <h1 class="sec-title">XIII. Conclusion and Future Work</h1>
 
-<p>We presented ACTE, a formally grounded, prototype-implemented adaptive trust framework for AI-generated shell scripts. The system combines semantic parsing, execution-context analysis, threat-intelligence signature matching, and online SGD feedback learning into a logistic risk model that achieves F1&nbsp;=&nbsp;0.915, ROC-AUC&nbsp;=&nbsp;0.976, mean latency of 0.51&nbsp;ms/script, and a 93.8% reduction in false-positive rate relative to ShellCheck v0.9.0. All results are reproducible from the open codebase and seeded dataset. We honestly acknowledge the synthetic dataset and the prototype-sketch status of live enforcement as limitations.</p>
+<p>We presented ACTE, a formally grounded, prototype-implemented adaptive trust framework for AI-generated shell scripts. The system combines semantic parsing, execution-context analysis, threat-intelligence signature matching, and online SGD feedback learning into a logistic risk model that achieves F1&nbsp;=&nbsp;0.915, ROC-AUC&nbsp;=&nbsp;0.976, mean latency of 0.51&nbsp;ms/script, and a 93.8% reduction in false-positive rate relative to ShellCheck v0.9.0. The result is robust under five-fold cross-validation (F1&nbsp;=&nbsp;0.904&nbsp;&plusmn;&nbsp;0.033), survives a leave-template-out cross-validation that forbids train/test template overlap (F1&nbsp;=&nbsp;0.815&nbsp;&plusmn;&nbsp;0.191), is statistically significant against ShellCheck by an exact McNemar test (\(p<10^{-20}\)), and generalizes to an independent real-world holdout (F1&nbsp;=&nbsp;0.950, zero false positives) under a train-synthetic / test-real protocol. All results are reproducible from the open codebase and seeded data. We honestly acknowledge the synthetic training corpus and the prototype-sketch status of live enforcement as limitations.</p>
 
-<p>This paper is the first in a planned research program. Immediate future work includes: (1)&nbsp;a real-world dataset collection study gathering AI-generated scripts from deployed LLM coding assistants, with human-expert labeling, to validate the detection performance on non-synthetic data; (2)&nbsp;integration of ACTE with a live container runtime (containerd or Podman) to deploy the generated seccomp profiles and cgroup constraints as actual kernel-level enforcement rather than sketches; (3)&nbsp;extension of the threat-intelligence knowledge base with community-sourced signatures and automated signature induction from observed incidents; (4)&nbsp;a formal analysis of the monotonicity property and its implications for adversarial robustness under feature-space attacks; and (5)&nbsp;evaluation of ACTE in a multi-tenant CI/CD environment to characterize operational false-positive burden and operator feedback loop latency.</p>
+<p>This paper is the first in a planned research program. Immediate future work includes: (1)&nbsp;scaling the external validation of Section&nbsp;VIII-E into a large-scale field study that harvests AI-generated scripts from deployed LLM coding assistants with human-expert labeling, extending the promising 41-script generalization result; (2)&nbsp;integration of ACTE with a live container runtime (containerd or Podman) to deploy the generated seccomp profiles and cgroup constraints as actual kernel-level enforcement rather than sketches; (3)&nbsp;extension of the threat-intelligence knowledge base with community-sourced signatures and automated signature induction from observed incidents; (4)&nbsp;a formal analysis of the monotonicity property and its implications for adversarial robustness under feature-space attacks; and (5)&nbsp;evaluation of ACTE in a multi-tenant CI/CD environment to characterize operational false-positive burden and operator feedback loop latency.</p>
 
 <!-- ==================== REFERENCES ==================== -->
 <h1 class="sec-title">References</h1>

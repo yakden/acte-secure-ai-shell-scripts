@@ -585,6 +585,10 @@ def generate(verbose: bool = True) -> List[Dict]:
             else:
                 cat, fn, rationale = tpl
                 label = default_label
+            # The generating template's function name is a stable group id: it
+            # lets the evaluation run a leave-template-out cross-validation that
+            # forbids samples from the same template appearing in both folds.
+            template_id = getattr(fn, "__name__", "unknown")
             script = fn(rng)
             # Deduplicate identical scripts so metrics aren't inflated by copies.
             h = hash(script)
@@ -603,6 +607,7 @@ def generate(verbose: bool = True) -> List[Dict]:
                 "label": int(label),
                 "label_name": "dangerous" if label == 1 else "safe",
                 "rationale": rationale,
+                "template": template_id,
                 "path": rel,
                 "provenance": "synthetic-template/seed=%d" % SEED,
                 "n_chars": len(script),

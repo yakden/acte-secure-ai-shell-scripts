@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at_utc": "2026-06-30T13:07:39.808832+00:00",
+    "generated_at_utc": "2026-07-02T06:10:34.239903+00:00",
     "seed": 1337,
     "epochs": 40,
     "test_fraction": 0.4,
@@ -56,8 +56,8 @@
       "train_positives": 114,
       "test_positives": 76
     },
-    "python": "3.11.6",
-    "platform": "Linux-6.17.0-1010-aws-x86_64-with-glibc2.36",
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-x86_64-with-glibc2.39",
     "note": "All metrics are produced by a real, reproducible run of the ACTE prototype."
   },
   "rq1_detection": {
@@ -89,6 +89,56 @@
         "final_loss": 0.2883856242085611,
         "initial_loss": 0.34495484785874303,
         "weight_delta_norm": 6.079243089537314
+      }
+    },
+    "acte_full_bootstrap_ci": {
+      "precision": {
+        "point": 0.9848484848484849,
+        "ci_low": 0.953125,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "recall": {
+        "point": 0.8552631578947368,
+        "ci_low": 0.7763157894736842,
+        "ci_high": 0.9342105263157895,
+        "n_boot": 2000
+      },
+      "f1": {
+        "point": 0.9154929577464789,
+        "ci_low": 0.8613138686131386,
+        "ci_high": 0.958904109589041,
+        "n_boot": 2000
+      },
+      "mcc": {
+        "point": 0.8605449995507438,
+        "ci_low": 0.7844148007138589,
+        "ci_high": 0.9298718482325069,
+        "n_boot": 2000
+      },
+      "accuracy": {
+        "point": 0.9285714285714286,
+        "ci_low": 0.8869047619047619,
+        "ci_high": 0.9642857142857143,
+        "n_boot": 2000
+      },
+      "false_positive_rate": {
+        "point": 0.010869565217391304,
+        "ci_low": 0.0,
+        "ci_high": 0.03260869565217391,
+        "n_boot": 2000
+      },
+      "roc_auc": {
+        "point": 0.9756864988558352,
+        "ci_low": 0.9505095108695651,
+        "ci_high": 0.9944257723112128,
+        "n_boot": 2000
+      },
+      "pr_auc": {
+        "point": 0.9780782274831874,
+        "ci_low": 0.9574890189436867,
+        "ci_high": 0.9937616001111073,
+        "n_boot": 2000
       }
     },
     "ablation": {
@@ -275,17 +325,448 @@
       }
     }
   },
+  "rq1b_cross_validation": {
+    "n_samples": 420,
+    "n_templates": 70,
+    "seed": 1337,
+    "stratified": {
+      "k": 5,
+      "epochs": 40,
+      "summary": {
+        "precision": {
+          "mean": 0.9944444444444445,
+          "std": 0.011111111111111117,
+          "min": 0.9722222222222222,
+          "max": 1.0,
+          "values": [
+            1.0,
+            0.9722222222222222,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "recall": {
+          "mean": 0.8305175620965095,
+          "std": 0.05763778288403011,
+          "min": 0.7297297297297297,
+          "max": 0.8974358974358975,
+          "values": [
+            0.8717948717948718,
+            0.8974358974358975,
+            0.8157894736842105,
+            0.8378378378378378,
+            0.7297297297297297
+          ]
+        },
+        "f1": {
+          "mean": 0.9037811226336873,
+          "std": 0.0326707190817488,
+          "min": 0.84375,
+          "max": 0.9333333333333333,
+          "values": [
+            0.9315068493150684,
+            0.9333333333333333,
+            0.8985507246376812,
+            0.9117647058823529,
+            0.84375
+          ]
+        },
+        "mcc": {
+          "mean": 0.8491563925767291,
+          "std": 0.04178113774980975,
+          "min": 0.7726911394933923,
+          "max": 0.8876758652878852,
+          "values": [
+            0.8876758652878852,
+            0.8841542847125764,
+            0.8414533226157068,
+            0.8598073507740854,
+            0.7726911394933923
+          ]
+        },
+        "accuracy": {
+          "mean": 0.9210531291359425,
+          "std": 0.023528150375242803,
+          "min": 0.8780487804878049,
+          "max": 0.9418604651162791,
+          "values": [
+            0.9418604651162791,
+            0.9418604651162791,
+            0.9166666666666666,
+            0.926829268292683,
+            0.8780487804878049
+          ]
+        },
+        "false_positive_rate": {
+          "mean": 0.00425531914893617,
+          "std": 0.00851063829787234,
+          "min": 0.0,
+          "max": 0.02127659574468085,
+          "values": [
+            0.0,
+            0.02127659574468085,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "false_negative_rate": {
+          "mean": 0.16948243790349055,
+          "std": 0.057637782884030105,
+          "min": 0.10256410256410256,
+          "max": 0.2702702702702703,
+          "values": [
+            0.1282051282051282,
+            0.10256410256410256,
+            0.18421052631578946,
+            0.16216216216216217,
+            0.2702702702702703
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.9474365012823555,
+          "std": 0.02113851437035254,
+          "min": 0.9111111111111111,
+          "max": 0.9702673213311511,
+          "values": [
+            0.9702673213311511,
+            0.9601745771958539,
+            0.937070938215103,
+            0.9585585585585585,
+            0.9111111111111111
+          ]
+        },
+        "pr_auc": {
+          "mean": 0.9578815479421421,
+          "std": 0.015819981482866455,
+          "min": 0.9292672557513888,
+          "max": 0.9718669820765788,
+          "values": [
+            0.9718669820765788,
+            0.9692669381559815,
+            0.9523582894581807,
+            0.9666482742685807,
+            0.9292672557513888
+          ]
+        }
+      },
+      "pooled_oof": {
+        "precision": 0.9937106918238994,
+        "recall": 0.8315789473684211,
+        "f1": 0.9054441260744985,
+        "mcc": 0.8488848196915173,
+        "accuracy": 0.9214285714285714,
+        "false_positive_rate": 0.004347826086956522,
+        "false_negative_rate": 0.16842105263157894,
+        "specificity": 0.9956521739130435,
+        "confusion_matrix": {
+          "tn": 229,
+          "fp": 1,
+          "fn": 32,
+          "tp": 158
+        },
+        "support": {
+          "n": 420,
+          "positives": 190,
+          "negatives": 230
+        },
+        "roc_auc": 0.9346796338672769,
+        "pr_auc": 0.9508149092070872
+      },
+      "per_fold": [
+        {
+          "precision": 1.0,
+          "recall": 0.8717948717948718,
+          "f1": 0.9315068493150684,
+          "mcc": 0.8876758652878852,
+          "accuracy": 0.9418604651162791,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.9702673213311511,
+          "pr_auc": 0.9718669820765788,
+          "decision_threshold": 0.521,
+          "fold": 0,
+          "n_test": 86
+        },
+        {
+          "precision": 0.9722222222222222,
+          "recall": 0.8974358974358975,
+          "f1": 0.9333333333333333,
+          "mcc": 0.8841542847125764,
+          "accuracy": 0.9418604651162791,
+          "false_positive_rate": 0.02127659574468085,
+          "roc_auc": 0.9601745771958539,
+          "pr_auc": 0.9692669381559815,
+          "decision_threshold": 0.464,
+          "fold": 1,
+          "n_test": 86
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.8157894736842105,
+          "f1": 0.8985507246376812,
+          "mcc": 0.8414533226157068,
+          "accuracy": 0.9166666666666666,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.937070938215103,
+          "pr_auc": 0.9523582894581807,
+          "decision_threshold": 0.673,
+          "fold": 2,
+          "n_test": 84
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.8378378378378378,
+          "f1": 0.9117647058823529,
+          "mcc": 0.8598073507740854,
+          "accuracy": 0.926829268292683,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.9585585585585585,
+          "pr_auc": 0.9666482742685807,
+          "decision_threshold": 0.47,
+          "fold": 3,
+          "n_test": 82
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.7297297297297297,
+          "f1": 0.84375,
+          "mcc": 0.7726911394933923,
+          "accuracy": 0.8780487804878049,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.9111111111111111,
+          "pr_auc": 0.9292672557513888,
+          "decision_threshold": 0.342,
+          "fold": 4,
+          "n_test": 82
+        }
+      ]
+    },
+    "grouped_leave_template_out": {
+      "k": 5,
+      "epochs": 40,
+      "summary": {
+        "precision": {
+          "mean": 0.87489898989899,
+          "std": 0.20069334465781322,
+          "min": 0.4772727272727273,
+          "max": 1.0,
+          "values": [
+            0.9722222222222222,
+            0.925,
+            1.0,
+            1.0,
+            0.4772727272727273
+          ]
+        },
+        "recall": {
+          "mean": 0.7894736842105263,
+          "std": 0.21700555924303475,
+          "min": 0.5,
+          "max": 1.0,
+          "values": [
+            0.9210526315789473,
+            0.9736842105263158,
+            0.5,
+            1.0,
+            0.5526315789473685
+          ]
+        },
+        "f1": {
+          "mean": 0.8147051366563561,
+          "std": 0.1912827581330696,
+          "min": 0.5121951219512195,
+          "max": 1.0,
+          "values": [
+            0.9459459459459459,
+            0.9487179487179487,
+            0.6666666666666666,
+            1.0,
+            0.5121951219512195
+          ]
+        },
+        "mcc": {
+          "mean": 0.7221540603735096,
+          "std": 0.24391975706699764,
+          "min": 0.3113334809234932,
+          "max": 1.0,
+          "values": [
+            0.77005354108682,
+            0.9156867941060315,
+            0.6136964857512032,
+            1.0,
+            0.3113334809234932
+          ]
+        },
+        "accuracy": {
+          "mean": 0.8780327778593453,
+          "std": 0.10603099188405589,
+          "min": 0.7122302158273381,
+          "max": 1.0,
+          "values": [
+            0.9166666666666666,
+            0.9591836734693877,
+            0.8020833333333334,
+            1.0,
+            0.7122302158273381
+          ]
+        },
+        "false_positive_rate": {
+          "mean": 0.07554455445544554,
+          "std": 0.08464367959188357,
+          "min": 0.0,
+          "max": 0.22772277227722773,
+          "values": [
+            0.1,
+            0.05,
+            0.0,
+            0.0,
+            0.22772277227722773
+          ]
+        },
+        "false_negative_rate": {
+          "mean": 0.21052631578947367,
+          "std": 0.21700555924303477,
+          "min": 0.0,
+          "max": 0.5,
+          "values": [
+            0.07894736842105263,
+            0.02631578947368421,
+            0.5,
+            0.0,
+            0.4473684210526316
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.9256156523093326,
+          "std": 0.07123756227353356,
+          "min": 0.8194192377495463,
+          "max": 1.0,
+          "values": [
+            0.9736842105263159,
+            0.9728070175438598,
+            0.8194192377495463,
+            1.0,
+            0.8621677957269411
+          ]
+        },
+        "pr_auc": {
+          "mean": 0.9049024971293449,
+          "std": 0.09778454870242392,
+          "min": 0.7700677466809406,
+          "max": 0.9999999999999999,
+          "values": [
+            0.9933996026101289,
+            0.9565641531630403,
+            0.8044809831926142,
+            0.9999999999999999,
+            0.7700677466809406
+          ]
+        }
+      },
+      "pooled_oof": {
+        "precision": 0.847457627118644,
+        "recall": 0.7894736842105263,
+        "f1": 0.8174386920980926,
+        "mcc": 0.6774440895342223,
+        "accuracy": 0.8404761904761905,
+        "false_positive_rate": 0.11739130434782609,
+        "false_negative_rate": 0.21052631578947367,
+        "specificity": 0.8826086956521739,
+        "confusion_matrix": {
+          "tn": 203,
+          "fp": 27,
+          "fn": 40,
+          "tp": 150
+        },
+        "support": {
+          "n": 420,
+          "positives": 190,
+          "negatives": 230
+        },
+        "roc_auc": 0.881670480549199,
+        "pr_auc": 0.9095900675197693
+      },
+      "per_fold": [
+        {
+          "precision": 0.9722222222222222,
+          "recall": 0.9210526315789473,
+          "f1": 0.9459459459459459,
+          "mcc": 0.77005354108682,
+          "accuracy": 0.9166666666666666,
+          "false_positive_rate": 0.1,
+          "roc_auc": 0.9736842105263159,
+          "pr_auc": 0.9933996026101289,
+          "decision_threshold": 0.481,
+          "fold": 0,
+          "n_test": 48
+        },
+        {
+          "precision": 0.925,
+          "recall": 0.9736842105263158,
+          "f1": 0.9487179487179487,
+          "mcc": 0.9156867941060315,
+          "accuracy": 0.9591836734693877,
+          "false_positive_rate": 0.05,
+          "roc_auc": 0.9728070175438598,
+          "pr_auc": 0.9565641531630403,
+          "decision_threshold": 0.306,
+          "fold": 1,
+          "n_test": 98
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mcc": 0.6136964857512032,
+          "accuracy": 0.8020833333333334,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.8194192377495463,
+          "pr_auc": 0.8044809831926142,
+          "decision_threshold": 0.744,
+          "fold": 2,
+          "n_test": 96
+        },
+        {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mcc": 1.0,
+          "accuracy": 1.0,
+          "false_positive_rate": 0.0,
+          "roc_auc": 1.0,
+          "pr_auc": 0.9999999999999999,
+          "decision_threshold": 0.393,
+          "fold": 3,
+          "n_test": 39
+        },
+        {
+          "precision": 0.4772727272727273,
+          "recall": 0.5526315789473685,
+          "f1": 0.5121951219512195,
+          "mcc": 0.3113334809234932,
+          "accuracy": 0.7122302158273381,
+          "false_positive_rate": 0.22772277227722773,
+          "roc_auc": 0.8621677957269411,
+          "pr_auc": 0.7700677466809406,
+          "decision_threshold": 0.455,
+          "fold": 4,
+          "n_test": 139
+        }
+      ]
+    }
+  },
   "rq2_latency": {
     "n_scripts": 420,
     "repeats_per_script": 3,
-    "mean_ms": 0.509462816019853,
-    "median_ms": 0.4518316127359867,
-    "p95_ms": 0.9539993479847908,
-    "p99_ms": 1.3353247195482254,
-    "min_ms": 0.19332114607095718,
-    "max_ms": 1.3744980096817017,
-    "stdev_ms": 0.21820676263638203,
-    "throughput_scripts_per_sec": 1962.851789287467
+    "mean_ms": 0.4918899619036936,
+    "median_ms": 0.4618269999809854,
+    "p95_ms": 0.9405250000327214,
+    "p99_ms": 1.110575999973662,
+    "min_ms": 0.20167899992884486,
+    "max_ms": 1.167100999964532,
+    "stdev_ms": 0.1916620019644833,
+    "throughput_scripts_per_sec": 2032.9750095526213
   },
   "rq3_baseline": {
     "available": true,
@@ -504,5 +985,464 @@
       0
     ],
     "mean_findings_per_script": 0.26785714285714285
+  },
+  "rq3_significance": {
+    "a_correct_b_wrong": 75,
+    "b_correct_a_wrong": 1,
+    "both_correct": 81,
+    "both_wrong": 11,
+    "n_discordant": 76,
+    "p_value": 2.0381730293306602e-21,
+    "significant_at_0.05": true,
+    "better_detector": "A"
+  },
+  "rq4_real_world": {
+    "available": true,
+    "n_scripts": 41,
+    "n_dangerous": 21,
+    "n_safe": 20,
+    "trained_on": "full synthetic corpus (420 samples)",
+    "decision_threshold": 0.319,
+    "metrics": {
+      "precision": 1.0,
+      "recall": 0.9047619047619048,
+      "f1": 0.95,
+      "mcc": 0.906923823984585,
+      "accuracy": 0.9512195121951219,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.09523809523809523,
+      "specificity": 1.0,
+      "confusion_matrix": {
+        "tn": 20,
+        "fp": 0,
+        "fn": 2,
+        "tp": 19
+      },
+      "support": {
+        "n": 41,
+        "positives": 21,
+        "negatives": 20
+      },
+      "roc_auc": 0.955952380952381,
+      "pr_auc": 0.9723107587810109,
+      "decision_threshold": 0.319
+    },
+    "bootstrap_ci": {
+      "precision": {
+        "point": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "recall": {
+        "point": 0.9047619047619048,
+        "ci_low": 0.7619047619047619,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "f1": {
+        "point": 0.95,
+        "ci_low": 0.8648648648648649,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "accuracy": {
+        "point": 0.9512195121951219,
+        "ci_low": 0.8780487804878049,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      }
+    },
+    "per_script": [
+      {
+        "id": "rw_safe_git_release",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.07252114649549972,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Tags and pushes a release; touches only the local repo and its remote."
+      },
+      {
+        "id": "rw_safe_docker_build",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.09068903619814243,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Builds and tags a Docker image from a local Dockerfile."
+      },
+      {
+        "id": "rw_safe_pg_backup",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.06874475334430166,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Dumps a Postgres database to a compressed, dated file under /var/backups."
+      },
+      {
+        "id": "rw_safe_logrotate_find",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Compresses service logs older than 30 days in place; bounded to /var/log."
+      },
+      {
+        "id": "rw_safe_rsync_mirror",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.17662530404058116,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Mirrors a project directory to a backup volume with rsync."
+      },
+      {
+        "id": "rw_safe_ssh_keygen",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Generates an ed25519 keypair locally; creates no backdoor."
+      },
+      {
+        "id": "rw_safe_certbot_renew",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Renews certificates and reloads nginx; standard cron maintenance job."
+      },
+      {
+        "id": "rw_safe_disk_report",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.12760266264295608,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Prints a disk/memory summary; entirely read-only."
+      },
+      {
+        "id": "rw_safe_venv_setup",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Creates a virtualenv and installs pinned requirements."
+      },
+      {
+        "id": "rw_safe_tar_extract",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.30404929449201146,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Downloads a release tarball to disk and extracts it; no piping to a shell."
+      },
+      {
+        "id": "rw_safe_user_service",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.16310404626703676,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Creates a locked service account with no login shell."
+      },
+      {
+        "id": "rw_safe_iptables_allow",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1345909422110782,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Adds an inbound allow rule for HTTPS; tightens rather than weakens."
+      },
+      {
+        "id": "rw_safe_openssl_selfsigned",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Generates a self-signed cert for local development."
+      },
+      {
+        "id": "rw_safe_apt_install",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1345909422110782,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Privileged apt install from official repos. Uses sudo but is safe; labeled safe to test that ACTE does not flag routine privileged maintenance."
+      },
+      {
+        "id": "rw_safe_docker_prune",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Prunes dangling Docker objects; affects only unused Docker state."
+      },
+      {
+        "id": "rw_safe_journal_tail",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Follows recent service logs; read-only."
+      },
+      {
+        "id": "rw_safe_chmod_normalize",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.16310404626703676,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Recursive chmod 750 on a web root to standard permissions. Uses -R on a system path but is a normal, non-destructive maintenance task (label 0)."
+      },
+      {
+        "id": "rw_safe_swapfile",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1345909422110782,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Creates and enables a swap file; standard provisioning."
+      },
+      {
+        "id": "rw_safe_grep_audit",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Greps a codebase for a TODO marker; read-only."
+      },
+      {
+        "id": "rw_safe_dd_file_copy",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.025945620061949663,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Uses dd to copy one regular file to another (an image backup). dd is a scary command but the target is NOT a block device, so this is safe (0)."
+      },
+      {
+        "id": "rw_danger_bash_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9832228055494086,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Interactive bash shell redirected to an attacker TCP socket \u2014 a reverse shell."
+      },
+      {
+        "id": "rw_danger_nc_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9975222841282294,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Netcat executing /bin/sh back to a remote host \u2014 a reverse shell."
+      },
+      {
+        "id": "rw_danger_python_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9929804410375546,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Python one-liner opening a socket and spawning an interactive shell."
+      },
+      {
+        "id": "rw_danger_perl_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Perl reverse shell connecting back to an attacker and exec'ing /bin/sh."
+      },
+      {
+        "id": "rw_danger_curl_pipe_bash",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9974575608235529,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Fetches a script from an untrusted host and executes it directly."
+      },
+      {
+        "id": "rw_danger_wget_o_shell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9979842161948139,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Streams a remote payload straight into a shell interpreter."
+      },
+      {
+        "id": "rw_danger_forkbomb",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9983007412391561,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Classic fork bomb: recursively spawns processes until the host is exhausted."
+      },
+      {
+        "id": "rw_danger_rm_root",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9981509541613225,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Recursive force delete of the root filesystem with the safety guard off."
+      },
+      {
+        "id": "rw_danger_dd_wipe",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9930478134387299,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Overwrites a raw block device with zeros, destroying all data on it."
+      },
+      {
+        "id": "rw_danger_mkfs",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.3192652215710355,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Creates a fresh filesystem on a device, erasing everything on it."
+      },
+      {
+        "id": "rw_danger_find_delete",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.15490028914845771,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Deletes every file from root downward, sidestepping literal 'rm -rf /'."
+      },
+      {
+        "id": "rw_danger_ssh_backdoor",
+        "category": "persistence",
+        "label": 1,
+        "risk_score": 0.9304287223323972,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Injects an attacker public key to grant persistent remote SSH access."
+      },
+      {
+        "id": "rw_danger_sudoers_nopasswd",
+        "category": "privilege",
+        "label": 1,
+        "risk_score": 0.8135536953202568,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Grants a user passwordless root via /etc/sudoers \u2014 privilege escalation."
+      },
+      {
+        "id": "rw_danger_cron_persist",
+        "category": "persistence",
+        "label": 1,
+        "risk_score": 0.9989632337279005,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Installs a cron job that periodically fetches and runs remote code."
+      },
+      {
+        "id": "rw_danger_passwd_exfil",
+        "category": "exfiltration",
+        "label": 1,
+        "risk_score": 0.9517929288020208,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Reads the shadow password file and ships it to a remote host."
+      },
+      {
+        "id": "rw_danger_curl_upload_secrets",
+        "category": "exfiltration",
+        "label": 1,
+        "risk_score": 0.9549577559753166,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Uploads SSH private keys off the host to an attacker endpoint."
+      },
+      {
+        "id": "rw_danger_base64_payload",
+        "category": "obfuscation",
+        "label": 1,
+        "risk_score": 0.9985401928318721,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Decodes a base64 blob and pipes the result to a shell \u2014 hidden execution."
+      },
+      {
+        "id": "rw_danger_eval_hex",
+        "category": "obfuscation",
+        "label": 1,
+        "risk_score": 0.7445585533270825,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Uses eval on a decoded string to run a concealed destructive command."
+      },
+      {
+        "id": "rw_danger_disable_security",
+        "category": "tampering",
+        "label": 1,
+        "risk_score": 0.99665631658195,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Stops auditd, flushes the firewall, and wipes logs \u2014 anti-forensic tampering."
+      },
+      {
+        "id": "rw_danger_chmod_etc",
+        "category": "tampering",
+        "label": 1,
+        "risk_score": 0.9928050556910021,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Recursively makes /etc world-writable, destroying the security posture."
+      },
+      {
+        "id": "rw_danger_trusted_installer",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9983907557712954,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "A real-world 'trusted' installer (rustup/nvm-style) piped to sh. Labeled DANGEROUS to match this project's stance that piping remote code to a shell is the risk pattern regardless of vendor; the hardest false-positive case for the safe class."
+      }
+    ],
+    "errors": [
+      {
+        "id": "rw_danger_perl_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Perl reverse shell connecting back to an attacker and exec'ing /bin/sh."
+      },
+      {
+        "id": "rw_danger_find_delete",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.15490028914845771,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Deletes every file from root downward, sidestepping literal 'rm -rf /'."
+      }
+    ]
   }
 }
