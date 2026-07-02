@@ -75,6 +75,7 @@ dominant**, on raw F1; its edge is the lowest false-positive rate, an interpreta
 | Leave-template-out CV F1 (τ=0.5) | **0.823 ± 0.101** |
 | Real-world holdout (train-synthetic → test-real) | **F1 0.895**, precision 1.000, FPR 0.000, ROC-AUC 0.990 (n=41) |
 | Learned TF-IDF baselines (real holdout) | F1 0.95–0.98 at FPR 0.05–0.30 — ACTE competitive, lowest FPR |
+| Adaptive evasion (benign camouflage) | ACTE recall 0.86→0.84; TF-IDF recall 0.97→0.32 — ACTE far more robust |
 | ShellCheck (a linter, not a security tool) | FPR 0.174, recall 0.079 — motivates the work, not a headline |
 
 Full tables (per-category detection, ablation study, cross-validation with the

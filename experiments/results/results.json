@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at_utc": "2026-07-02T07:00:01.207131+00:00",
+    "generated_at_utc": "2026-07-02T08:12:10.258607+00:00",
     "seed": 1337,
     "epochs": 40,
     "test_fraction": 0.4,
@@ -759,14 +759,14 @@
   "rq2_latency": {
     "n_scripts": 420,
     "repeats_per_script": 3,
-    "mean_ms": 0.5333241238401699,
-    "median_ms": 0.49564200025997707,
-    "p95_ms": 0.9557869998388924,
-    "p99_ms": 1.0255389997837483,
-    "min_ms": 0.21038799968664534,
-    "max_ms": 1.7430239995519514,
-    "stdev_ms": 0.1983133614262644,
-    "throughput_scripts_per_sec": 1875.032377683494
+    "mean_ms": 0.6947056333268891,
+    "median_ms": 0.6514655000273706,
+    "p95_ms": 1.3052659999175376,
+    "p99_ms": 1.522509999858812,
+    "min_ms": 0.2951980000034382,
+    "max_ms": 1.6648549999445095,
+    "stdev_ms": 0.2586562310439507,
+    "throughput_scripts_per_sec": 1439.4586023595073
   },
   "rq3_baseline": {
     "available": true,
@@ -1613,5 +1613,31 @@
       }
     },
     "seed": 1337
+  },
+  "rq6_adversarial": {
+    "n_dangerous": 76,
+    "decision_threshold": 0.5,
+    "acte": {
+      "original_recall": 0.8552631578947368,
+      "benign_camouflage": 0.8421052631578947,
+      "lexical_disguise": 0.8552631578947368,
+      "both": 0.8421052631578947,
+      "drops": {
+        "benign_camouflage": 0.013,
+        "lexical_disguise": 0.0,
+        "both": 0.013
+      }
+    },
+    "tfidf_logreg": {
+      "original_recall": 0.9736842105263158,
+      "benign_camouflage": 0.3157894736842105,
+      "lexical_disguise": 0.9736842105263158,
+      "both": 0.3026315789473684,
+      "drops": {
+        "benign_camouflage": 0.658,
+        "lexical_disguise": 0.0,
+        "both": 0.671
+      }
+    }
   }
 }

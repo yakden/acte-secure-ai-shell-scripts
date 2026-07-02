@@ -29,6 +29,7 @@ from data import generate_dataset
 from data.real_world import build as real_world_build
 from experiments import (
     acte_eval,
+    adversarial,
     baseline_shellcheck,
     cross_validation,
     figures,
@@ -66,12 +67,12 @@ def main() -> int:
     print("=" * 70)
 
     # 1. dataset ------------------------------------------------------------
-    print("\n[1/10] Regenerating dataset (+ real-world holdout) ...")
+    print("\n[1/11] Regenerating dataset (+ real-world holdout) ...")
     records = generate_dataset.generate(verbose=True)
     real_world_build.build(verbose=True)
 
     # 2. load + split -------------------------------------------------------
-    print("\n[2/10] Loading and splitting ...")
+    print("\n[2/11] Loading and splitting ...")
     samples = load_samples()
     train, test = stratified_split(samples, test_fraction=TEST_FRACTION, seed=SEED)
     split = split_summary(train, test)
@@ -79,7 +80,7 @@ def main() -> int:
           % (split["n_train"], split["n_test"], split["test_positives"]))
 
     # 3. ACTE + ablation ----------------------------------------------------
-    print("\n[3/10] Training + evaluating ACTE and ablations ...")
+    print("\n[3/11] Training + evaluating ACTE and ablations ...")
     acte = acte_eval.run_full_and_ablation(train, test, epochs=EPOCHS, seed=SEED)
     full = acte["configs"]["full"]
     print("  ACTE(full): precision=%.3f recall=%.3f F1=%.3f MCC=%.3f acc=%.3f"
@@ -95,7 +96,7 @@ def main() -> int:
           % (boot["f1"]["ci_low"], boot["f1"]["ci_high"], boot["f1"]["point"]))
 
     # 4. cross-validation ---------------------------------------------------
-    print("\n[4/10] Cross-validating (stratified + leave-template-out) ...")
+    print("\n[4/11] Cross-validating (stratified + leave-template-out) ...")
     cv = cross_validation.run_cross_validation(
         samples, k=CV_FOLDS, epochs=EPOCHS, seed=SEED
     )
@@ -105,7 +106,7 @@ def main() -> int:
     print("  leave-template-out F1 = %.3f ± %.3f" % (cv_g["mean"], cv_g["std"]))
 
     # 5. figures ------------------------------------------------------------
-    print("\n[5/10] Rendering figures ...")
+    print("\n[5/11] Rendering figures ...")
     roc_path = os.path.join(FIGURES_DIR, "roc_curve.png")
     pr_path = os.path.join(FIGURES_DIR, "pr_curve.png")
     abl_path = os.path.join(FIGURES_DIR, "ablation_f1.png")
@@ -123,7 +124,7 @@ def main() -> int:
     print("  saved roc_curve.png, pr_curve.png, ablation_f1.png, cross_validation_f1.png")
 
     # 6. ShellCheck baseline + significance test ----------------------------
-    print("\n[6/10] Running ShellCheck baseline + McNemar test ...")
+    print("\n[6/11] Running ShellCheck baseline + McNemar test ...")
     baseline = baseline_shellcheck.evaluate_baseline(test)
     cmp_path = os.path.join(FIGURES_DIR, "baseline_comparison.png")
     mcnemar = None
@@ -147,13 +148,13 @@ def main() -> int:
               baseline.get("reason"))
 
     # 7. latency ------------------------------------------------------------
-    print("\n[7/10] Measuring latency ...")
+    print("\n[7/11] Measuring latency ...")
     lat = latency.measure_latency(samples, repeats=3, warmup=5)
     print("  mean=%.3f ms  median=%.3f ms  p95=%.3f ms"
           % (lat["mean_ms"], lat["median_ms"], lat["p95_ms"]))
 
     # 8. real-world external validation -------------------------------------
-    print("\n[8/10] Real-world external validation (train synthetic → test real) ...")
+    print("\n[8/11] Real-world external validation (train synthetic → test real) ...")
     real = real_world_eval.evaluate_real_world(epochs=EPOCHS, seed=SEED)
     rw_path = os.path.join(FIGURES_DIR, "real_world_validation.png")
     if real.get("available"):
@@ -167,7 +168,7 @@ def main() -> int:
         print("  real-world validation skipped:", real.get("reason"))
 
     # 9. learned ML baselines (RQ5) -----------------------------------------
-    print("\n[9/10] Training learned baselines (TF-IDF + LogReg/SVM/RF) ...")
+    print("\n[9/11] Training learned baselines (TF-IDF + LogReg/SVM/RF) ...")
     real_samples = load_samples(REAL_WORLD_MANIFEST) if REAL_WORLD_OK else None
     ml = ml_baselines.evaluate_baselines(train, test, real_samples, seed=SEED)
     for name, m in ml["on_synthetic_test"].items():
@@ -181,8 +182,18 @@ def main() -> int:
         figures.plot_ml_baselines(det, f1s, fprs, ml_path)
         print("  saved ml_baselines.png")
 
-    # 10. write results -----------------------------------------------------
-    print("\n[10/10] Writing results ...")
+    # 10. adversarial evasion (RQ6) -----------------------------------------
+    print("\n[10/11] Adversarial evasion (ACTE vs TF-IDF under camouflage) ...")
+    adv = adversarial.evaluate_adversarial(train, test, epochs=EPOCHS, seed=SEED)
+    print("  ACTE  original=%.3f  benign_camouflage=%.3f (drop %+.3f)"
+          % (adv["acte"]["original_recall"], adv["acte"]["benign_camouflage"],
+             adv["acte"]["drops"]["benign_camouflage"]))
+    print("  TFIDF original=%.3f  benign_camouflage=%.3f (drop %+.3f)"
+          % (adv["tfidf_logreg"]["original_recall"], adv["tfidf_logreg"]["benign_camouflage"],
+             adv["tfidf_logreg"]["drops"]["benign_camouflage"]))
+
+    # 11. write results -----------------------------------------------------
+    print("\n[11/11] Writing results ...")
     results = {
         "meta": _meta(split, records),
         "rq1_detection": {
@@ -197,6 +208,7 @@ def main() -> int:
         "rq3_significance": mcnemar,
         "rq4_real_world": real,
         "rq5_ml_baselines": ml,
+        "rq6_adversarial": adv,
     }
     results_json = os.path.join(RESULTS_DIR, "results.json")
     with open(results_json, "w", encoding="utf-8") as fh:
@@ -566,6 +578,39 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
                  "online adaptation from a single label, where a fitted TF-IDF "
                  "vocabulary is frozen; and (iv) the automatic synthesis of an "
                  "enforcement policy, which a bare classifier does not produce.\n")
+
+    # RQ6 — adversarial evasion
+    adv = results.get("rq6_adversarial")
+    if adv:
+        L.append("## RQ6 — Robustness to adaptive evasion\n")
+        L.append("We apply two behaviour-preserving transformations to the dangerous "
+                 "test scripts and measure how much detection each costs ACTE versus the "
+                 "TF-IDF + logistic-regression baseline. `benign_camouflage` prepends a "
+                 "shebang, `set -euo pipefail`, and reassuring comments (a direct probe of "
+                 "the monotonicity property, since those tokens carry negative weight); "
+                 "`lexical_disguise` renames attacker hostnames and variables. The "
+                 "malicious commands are left intact in both.\n")
+        L.append("| Detector | Original recall | benign_camouflage | lexical_disguise | both |")
+        L.append("|---|---|---|---|---|")
+        for det, lab in (("acte", "ACTE"), ("tfidf_logreg", "TF-IDF + LogReg")):
+            d = adv[det]
+            L.append(f"| {lab} | {_fmt(d['original_recall'],3)} | "
+                     f"{_fmt(d['benign_camouflage'],3)} | {_fmt(d['lexical_disguise'],3)} | "
+                     f"{_fmt(d['both'],3)} |")
+        L.append("")
+        ad = adv["acte"]["drops"]["benign_camouflage"]
+        td = adv["tfidf_logreg"]["drops"]["benign_camouflage"]
+        L.append(f"The finding reverses the raw-F1 story of RQ5. Benign camouflage costs "
+                 f"ACTE {ad:+.3f} recall but costs the lexical baseline {td:+.3f} — a "
+                 "behaviour-preserving edit that a defender would consider trivial "
+                 "collapses the bag-of-tokens model while barely touching ACTE, because "
+                 "the signature and context weights for the intact malicious commands "
+                 "dominate the small negative benign-signal weights. Renaming hostnames "
+                 "moves neither detector, since both key on command structure rather than "
+                 "specific strings. In short: the monotonicity concern is real in theory "
+                 "but does not yield an easy benign-camouflage evasion of ACTE in practice; "
+                 "the evasions that do work (RQ4) are novel techniques absent from the "
+                 "signature base, not cosmetic edits.\n")
 
     # Figures
     L.append("## Figures\n")

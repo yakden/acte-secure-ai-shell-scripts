@@ -2,7 +2,7 @@
 
 > All numbers below were produced by a real, reproducible run of the ACTE prototype (`python -m experiments.run_all`). Nothing is hardcoded.
 
-- Generated (UTC): `2026-07-02T07:00:01.207131+00:00`
+- Generated (UTC): `2026-07-02T08:12:10.258607+00:00`
 - Seed: `1337`  |  Training epochs: `40`  |  Test fraction: `0.4`
 - Python `3.11.15`  |  Platform `Linux-6.18.5-x86_64-with-glibc2.39`
 - Dataset: **420 samples** (train=252, test=168, test positives=76)
@@ -101,14 +101,14 @@ Pooled out-of-fold (Leave-template-out): F1=0.826, precision=0.854, recall=0.800
 
 | Statistic | Milliseconds |
 |---|---|
-| Mean | 0.533 |
-| Median | 0.496 |
-| p95 | 0.956 |
-| p99 | 1.026 |
-| Min | 0.210 |
-| Max | 1.743 |
-| Stdev | 0.198 |
-| Throughput (scripts/s) | 1875.0 |
+| Mean | 0.695 |
+| Median | 0.651 |
+| p95 | 1.305 |
+| p99 | 1.523 |
+| Min | 0.295 |
+| Max | 1.665 |
+| Stdev | 0.259 |
+| Throughput (scripts/s) | 1439.5 |
 
 Measured over 420 scripts, 3 repeats each (min taken).
 
@@ -174,6 +174,17 @@ ShellCheck (RQ3) is a linter, not a security classifier, so the more demanding c
 | TF-IDF + RandomForest | 0.778 | 1.000 | 0.875 | 0.940 | 0.300 |
 
 The linear text classifiers are competitive with, and on raw F1 sometimes exceed, ACTE — a candid finding. ACTE's advantage is not a higher F1 but (i) the lowest false-positive rate, which is the operational cost of a gate; (ii) a 13-feature model whose every decision is attributable, versus thousands of opaque lexical weights (the LogReg baseline keys on bare tokens such as `rf` and on distributional artifacts of the corpus); (iii) sub-millisecond online adaptation from a single label, where a fitted TF-IDF vocabulary is frozen; and (iv) the automatic synthesis of an enforcement policy, which a bare classifier does not produce.
+
+## RQ6 — Robustness to adaptive evasion
+
+We apply two behaviour-preserving transformations to the dangerous test scripts and measure how much detection each costs ACTE versus the TF-IDF + logistic-regression baseline. `benign_camouflage` prepends a shebang, `set -euo pipefail`, and reassuring comments (a direct probe of the monotonicity property, since those tokens carry negative weight); `lexical_disguise` renames attacker hostnames and variables. The malicious commands are left intact in both.
+
+| Detector | Original recall | benign_camouflage | lexical_disguise | both |
+|---|---|---|---|---|
+| ACTE | 0.855 | 0.842 | 0.855 | 0.842 |
+| TF-IDF + LogReg | 0.974 | 0.316 | 0.974 | 0.303 |
+
+The finding reverses the raw-F1 story of RQ5. Benign camouflage costs ACTE +0.013 recall but costs the lexical baseline +0.658 — a behaviour-preserving edit that a defender would consider trivial collapses the bag-of-tokens model while barely touching ACTE, because the signature and context weights for the intact malicious commands dominate the small negative benign-signal weights. Renaming hostnames moves neither detector, since both key on command structure rather than specific strings. In short: the monotonicity concern is real in theory but does not yield an easy benign-camouflage evasion of ACTE in practice; the evasions that do work (RQ4) are novel techniques absent from the signature base, not cosmetic edits.
 
 ## Figures
 
