@@ -58,5 +58,31 @@ difficulty comes from realistic ambiguity, never from mislabeling.
 ## Files
 
 * `manifest.jsonl` / `manifest.csv` — one row per sample with
-  `id, category, label, label_name, rationale, path, provenance, n_chars, n_lines`.
+  `id, category, label, label_name, rationale, template, path, provenance,
+  n_chars, n_lines`. The `template` field records the generating template
+  function's name; it is the group key for the **leave-template-out
+  cross-validation**, which guarantees no template contributes scripts to both
+  the training and evaluation folds.
 * `scripts/<id>.sh` — the script body for each sample.
+
+## Real-world external validation set (independent holdout)
+
+Because the corpus above is synthetic, the study also ships an **independent,
+non-synthetic holdout** used only for testing (never for training or threshold
+tuning): `data/real_world/`. It contains 41 hand-authored, realistic scripts
+(21 dangerous, 20 safe) drawn from **publicly documented idioms** — routine
+sysadmin/devops tasks on the safe side, and canonical, publicly catalogued
+attack techniques (reverse shells, the bash fork bomb, device-wipe `dd`/`mkfs`,
+SSH `authorized_keys` backdoors, cron persistence, obfuscated payloads) on the
+dangerous side. Each script's source and labeling rationale are documented
+inline in `data/real_world/build.py`, including the two deliberately hard cases
+(a trusted-vendor `curl | sh` installer and a legitimate privileged `apt`
+install). To keep the holdout genuinely external, no real-world script is a
+near-duplicate of any training sample: the maximum sequence similarity to any
+synthetic script is 0.83, and `tests/test_dataset.py` fails the build if any
+holdout script exceeds 0.85 similarity. (Corpus deduplication itself uses a
+SHA-256 content hash rather than the salted built-in `hash()`, so membership is
+stable across runs and interpreters.) The RQ4 experiment
+(`experiments/real_world_eval.py`) trains ACTE on the full synthetic corpus,
+freezes it, and evaluates once on this holdout, giving a true train-synthetic /
+test-real generalization measurement.

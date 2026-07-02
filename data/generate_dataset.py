@@ -30,6 +30,7 @@ The binary label is what RQ1 (detection accuracy) is measured against.
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
 import random
@@ -585,9 +586,15 @@ def generate(verbose: bool = True) -> List[Dict]:
             else:
                 cat, fn, rationale = tpl
                 label = default_label
+            # The generating template's function name is a stable group id: it
+            # lets the evaluation run a leave-template-out cross-validation that
+            # forbids samples from the same template appearing in both folds.
+            template_id = getattr(fn, "__name__", "unknown")
             script = fn(rng)
             # Deduplicate identical scripts so metrics aren't inflated by copies.
-            h = hash(script)
+            # Use a stable content hash: the builtin hash() is salted per process
+            # (PYTHONHASHSEED), which would make corpus membership non-reproducible.
+            h = hashlib.sha256(script.encode("utf-8")).hexdigest()
             if h in seen_hashes:
                 continue
             seen_hashes.add(h)
@@ -603,6 +610,7 @@ def generate(verbose: bool = True) -> List[Dict]:
                 "label": int(label),
                 "label_name": "dangerous" if label == 1 else "safe",
                 "rationale": rationale,
+                "template": template_id,
                 "path": rel,
                 "provenance": "synthetic-template/seed=%d" % SEED,
                 "n_chars": len(script),

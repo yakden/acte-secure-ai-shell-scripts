@@ -91,6 +91,92 @@ def plot_ablation_bar(
     return out_path
 
 
+def plot_cv_box(
+    stratified_f1: List[float],
+    grouped_f1: List[float],
+    out_path: str,
+    title: str = "Cross-validated F1 (per fold)",
+) -> str:
+    """Box/scatter of per-fold F1 for the two CV schemes."""
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    data = [stratified_f1, grouped_f1]
+    labels = ["Stratified\nk-fold", "Leave-template-out\nk-fold"]
+    bp = ax.boxplot(data, patch_artist=True, widths=0.5, showmeans=True)
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels(labels)
+    for patch, color in zip(bp["boxes"], ["#2ca02c", "#ff7f0e"]):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.55)
+    # Overlay the individual fold points.
+    import numpy as np
+    for i, vals in enumerate(data, start=1):
+        xs = np.random.default_rng(0).normal(i, 0.04, size=len(vals))
+        ax.scatter(xs, vals, color="black", zorder=3, s=18, alpha=0.8)
+    ax.set_ylabel("F1 score")
+    ax.set_title(title)
+    ax.set_ylim(0, 1.05)
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+    return out_path
+
+
+def plot_real_world(
+    metrics: dict,
+    out_path: str,
+    title: str = "Real-world external validation (train synthetic → test real)",
+) -> str:
+    """Bar chart of the headline metrics on the real-world holdout."""
+    names = ["Precision", "Recall", "F1", "Accuracy", "FPR"]
+    vals = [metrics["precision"], metrics["recall"], metrics["f1"],
+            metrics["accuracy"], metrics["false_positive_rate"]]
+    colors = ["#1f77b4", "#2ca02c", "#9467bd", "#17becf", "#d62728"]
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    bars = ax.bar(names, vals, color=colors)
+    for b, v in zip(bars, vals):
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.01, f"{v:.3f}",
+                ha="center", va="bottom", fontsize=9)
+    ax.set_ylim(0, 1.08)
+    ax.set_title(title)
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+    return out_path
+
+
+def plot_ml_baselines(
+    detectors: List[str],
+    f1: List[float],
+    fpr: List[float],
+    out_path: str,
+    title: str = "ACTE vs. learned baselines on the real-world holdout",
+) -> str:
+    """Grouped bars: F1 and FPR for ACTE and each ML baseline on real scripts."""
+    import numpy as np
+
+    x = np.arange(len(detectors))
+    width = 0.38
+    fig, ax = plt.subplots(figsize=(7.5, 4.5))
+    b1 = ax.bar(x - width / 2, f1, width, label="F1", color="#2ca02c")
+    b2 = ax.bar(x + width / 2, fpr, width, label="False Positive Rate", color="#d62728")
+    for bars in (b1, b2):
+        for b in bars:
+            ax.text(b.get_x() + b.get_width() / 2, b.get_height() + 0.01,
+                    f"{b.get_height():.2f}", ha="center", va="bottom", fontsize=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(detectors, rotation=15, ha="right")
+    ax.set_ylim(0, 1.08)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+    return out_path
+
+
 def plot_baseline_comparison(
     detectors: List[str],
     precision: List[float],

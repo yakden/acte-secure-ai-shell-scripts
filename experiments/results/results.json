@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at_utc": "2026-06-30T13:07:39.808832+00:00",
+    "generated_at_utc": "2026-07-02T08:12:10.258607+00:00",
     "seed": 1337,
     "epochs": 40,
     "test_fraction": 0.4,
@@ -56,8 +56,8 @@
       "train_positives": 114,
       "test_positives": 76
     },
-    "python": "3.11.6",
-    "platform": "Linux-6.17.0-1010-aws-x86_64-with-glibc2.36",
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-x86_64-with-glibc2.39",
     "note": "All metrics are produced by a real, reproducible run of the ACTE prototype."
   },
   "rq1_detection": {
@@ -89,6 +89,56 @@
         "final_loss": 0.2883856242085611,
         "initial_loss": 0.34495484785874303,
         "weight_delta_norm": 6.079243089537314
+      }
+    },
+    "acte_full_bootstrap_ci": {
+      "precision": {
+        "point": 0.9848484848484849,
+        "ci_low": 0.953125,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "recall": {
+        "point": 0.8552631578947368,
+        "ci_low": 0.7763157894736842,
+        "ci_high": 0.9342105263157895,
+        "n_boot": 2000
+      },
+      "f1": {
+        "point": 0.9154929577464789,
+        "ci_low": 0.8613138686131386,
+        "ci_high": 0.958904109589041,
+        "n_boot": 2000
+      },
+      "mcc": {
+        "point": 0.8605449995507438,
+        "ci_low": 0.7844148007138589,
+        "ci_high": 0.9298718482325069,
+        "n_boot": 2000
+      },
+      "accuracy": {
+        "point": 0.9285714285714286,
+        "ci_low": 0.8869047619047619,
+        "ci_high": 0.9642857142857143,
+        "n_boot": 2000
+      },
+      "false_positive_rate": {
+        "point": 0.010869565217391304,
+        "ci_low": 0.0,
+        "ci_high": 0.03260869565217391,
+        "n_boot": 2000
+      },
+      "roc_auc": {
+        "point": 0.9756864988558352,
+        "ci_low": 0.9505095108695651,
+        "ci_high": 0.9944257723112128,
+        "n_boot": 2000
+      },
+      "pr_auc": {
+        "point": 0.9780782274831874,
+        "ci_low": 0.9574890189436867,
+        "ci_high": 0.9937616001111073,
+        "n_boot": 2000
       }
     },
     "ablation": {
@@ -275,17 +325,448 @@
       }
     }
   },
+  "rq1b_cross_validation": {
+    "n_samples": 420,
+    "n_templates": 70,
+    "seed": 1337,
+    "stratified": {
+      "k": 5,
+      "epochs": 40,
+      "summary": {
+        "precision": {
+          "mean": 0.8836124401913876,
+          "std": 0.03613865810777095,
+          "min": 0.8181818181818182,
+          "max": 0.9210526315789473,
+          "values": [
+            0.8181818181818182,
+            0.875,
+            0.8947368421052632,
+            0.9210526315789473,
+            0.9090909090909091
+          ]
+        },
+        "recall": {
+          "mean": 0.8947368421052632,
+          "std": 0.055200465693165855,
+          "min": 0.7894736842105263,
+          "max": 0.9473684210526315,
+          "values": [
+            0.9473684210526315,
+            0.9210526315789473,
+            0.8947368421052632,
+            0.9210526315789473,
+            0.7894736842105263
+          ]
+        },
+        "f1": {
+          "mean": 0.8872689148286248,
+          "std": 0.02516426283327933,
+          "min": 0.8450704225352113,
+          "max": 0.9210526315789473,
+          "values": [
+            0.8780487804878049,
+            0.8974358974358975,
+            0.8947368421052632,
+            0.9210526315789473,
+            0.8450704225352113
+          ]
+        },
+        "mcc": {
+          "mean": 0.7964244455781871,
+          "std": 0.039719611543018604,
+          "min": 0.7381097353870201,
+          "max": 0.8558352402745996,
+          "values": [
+            0.7708140879794458,
+            0.8095828438837375,
+            0.8077803203661327,
+            0.8558352402745996,
+            0.7381097353870201
+          ]
+        },
+        "accuracy": {
+          "mean": 0.8976190476190476,
+          "std": 0.020756661635907978,
+          "min": 0.8690476190476191,
+          "max": 0.9285714285714286,
+          "values": [
+            0.8809523809523809,
+            0.9047619047619048,
+            0.9047619047619048,
+            0.9285714285714286,
+            0.8690476190476191
+          ]
+        },
+        "false_positive_rate": {
+          "mean": 0.1,
+          "std": 0.04032008041519871,
+          "min": 0.06521739130434782,
+          "max": 0.17391304347826086,
+          "values": [
+            0.17391304347826086,
+            0.10869565217391304,
+            0.08695652173913043,
+            0.06521739130434782,
+            0.06521739130434782
+          ]
+        },
+        "false_negative_rate": {
+          "mean": 0.10526315789473684,
+          "std": 0.05520046569316587,
+          "min": 0.05263157894736842,
+          "max": 0.21052631578947367,
+          "values": [
+            0.05263157894736842,
+            0.07894736842105263,
+            0.10526315789473684,
+            0.07894736842105263,
+            0.21052631578947367
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.9417048054919908,
+          "std": 0.03452572853554653,
+          "min": 0.8758581235697941,
+          "max": 0.9756864988558352,
+          "values": [
+            0.9616704805491991,
+            0.9479405034324943,
+            0.9473684210526315,
+            0.9756864988558352,
+            0.8758581235697941
+          ]
+        },
+        "pr_auc": {
+          "mean": 0.953961729817825,
+          "std": 0.02510229675515565,
+          "min": 0.9057574977881102,
+          "max": 0.9774724415595555,
+          "values": [
+            0.9689213862866076,
+            0.9575918137875414,
+            0.9600655096673103,
+            0.9774724415595555,
+            0.9057574977881102
+          ]
+        }
+      },
+      "pooled_oof": {
+        "precision": 0.8808290155440415,
+        "recall": 0.8947368421052632,
+        "f1": 0.8877284595300261,
+        "mcc": 0.7937294268844524,
+        "accuracy": 0.8976190476190476,
+        "false_positive_rate": 0.1,
+        "false_negative_rate": 0.10526315789473684,
+        "specificity": 0.9,
+        "confusion_matrix": {
+          "tn": 207,
+          "fp": 23,
+          "fn": 20,
+          "tp": 170
+        },
+        "support": {
+          "n": 420,
+          "positives": 190,
+          "negatives": 230
+        },
+        "roc_auc": 0.9364187643020594,
+        "pr_auc": 0.9518555486176747
+      },
+      "per_fold": [
+        {
+          "precision": 0.8181818181818182,
+          "recall": 0.9473684210526315,
+          "f1": 0.8780487804878049,
+          "mcc": 0.7708140879794458,
+          "accuracy": 0.8809523809523809,
+          "false_positive_rate": 0.17391304347826086,
+          "roc_auc": 0.9616704805491991,
+          "pr_auc": 0.9689213862866076,
+          "decision_threshold": 0.5,
+          "fold": 0,
+          "n_test": 84
+        },
+        {
+          "precision": 0.875,
+          "recall": 0.9210526315789473,
+          "f1": 0.8974358974358975,
+          "mcc": 0.8095828438837375,
+          "accuracy": 0.9047619047619048,
+          "false_positive_rate": 0.10869565217391304,
+          "roc_auc": 0.9479405034324943,
+          "pr_auc": 0.9575918137875414,
+          "decision_threshold": 0.5,
+          "fold": 1,
+          "n_test": 84
+        },
+        {
+          "precision": 0.8947368421052632,
+          "recall": 0.8947368421052632,
+          "f1": 0.8947368421052632,
+          "mcc": 0.8077803203661327,
+          "accuracy": 0.9047619047619048,
+          "false_positive_rate": 0.08695652173913043,
+          "roc_auc": 0.9473684210526315,
+          "pr_auc": 0.9600655096673103,
+          "decision_threshold": 0.5,
+          "fold": 2,
+          "n_test": 84
+        },
+        {
+          "precision": 0.9210526315789473,
+          "recall": 0.9210526315789473,
+          "f1": 0.9210526315789473,
+          "mcc": 0.8558352402745996,
+          "accuracy": 0.9285714285714286,
+          "false_positive_rate": 0.06521739130434782,
+          "roc_auc": 0.9756864988558352,
+          "pr_auc": 0.9774724415595555,
+          "decision_threshold": 0.5,
+          "fold": 3,
+          "n_test": 84
+        },
+        {
+          "precision": 0.9090909090909091,
+          "recall": 0.7894736842105263,
+          "f1": 0.8450704225352113,
+          "mcc": 0.7381097353870201,
+          "accuracy": 0.8690476190476191,
+          "false_positive_rate": 0.06521739130434782,
+          "roc_auc": 0.8758581235697941,
+          "pr_auc": 0.9057574977881102,
+          "decision_threshold": 0.5,
+          "fold": 4,
+          "n_test": 84
+        }
+      ]
+    },
+    "grouped_leave_template_out": {
+      "k": 5,
+      "epochs": 40,
+      "summary": {
+        "precision": {
+          "mean": 0.9031372549019607,
+          "std": 0.14238912736205167,
+          "min": 0.6333333333333333,
+          "max": 1.0,
+          "values": [
+            1.0,
+            1.0,
+            0.6333333333333333,
+            0.8823529411764706,
+            1.0
+          ]
+        },
+        "recall": {
+          "mean": 0.8,
+          "std": 0.17503462261385147,
+          "min": 0.5,
+          "max": 1.0,
+          "values": [
+            0.9473684210526315,
+            0.7631578947368421,
+            1.0,
+            0.7894736842105263,
+            0.5
+          ]
+        },
+        "f1": {
+          "mean": 0.82283096376913,
+          "std": 0.10110864292879782,
+          "min": 0.6666666666666666,
+          "max": 0.972972972972973,
+          "values": [
+            0.972972972972973,
+            0.8656716417910447,
+            0.7755102040816326,
+            0.8333333333333334,
+            0.6666666666666666
+          ]
+        },
+        "mcc": {
+          "mean": 0.7267616197484494,
+          "std": 0.1392883800608573,
+          "min": 0.574834569775249,
+          "max": 0.9528351047490354,
+          "values": [
+            0.9528351047490354,
+            0.7989227196429717,
+            0.574834569775249,
+            0.7123660144463386,
+            0.5948496901286525
+          ]
+        },
+        "accuracy": {
+          "mean": 0.8476190476190476,
+          "std": 0.08498365855987973,
+          "min": 0.7380952380952381,
+          "max": 0.9761904761904762,
+          "values": [
+            0.9761904761904762,
+            0.8928571428571429,
+            0.7380952380952381,
+            0.8571428571428571,
+            0.7738095238095238
+          ]
+        },
+        "false_positive_rate": {
+          "mean": 0.11304347826086958,
+          "std": 0.1856883174266315,
+          "min": 0.0,
+          "max": 0.4782608695652174,
+          "values": [
+            0.0,
+            0.0,
+            0.4782608695652174,
+            0.08695652173913043,
+            0.0
+          ]
+        },
+        "false_negative_rate": {
+          "mean": 0.2,
+          "std": 0.17503462261385147,
+          "min": 0.0,
+          "max": 0.5,
+          "values": [
+            0.05263157894736842,
+            0.23684210526315788,
+            0.0,
+            0.21052631578947367,
+            0.5
+          ]
+        },
+        "roc_auc": {
+          "mean": 0.9344965675057209,
+          "std": 0.09981976909130574,
+          "min": 0.7356979405034325,
+          "max": 1.0,
+          "values": [
+            0.9862700228832953,
+            0.9768306636155606,
+            1.0,
+            0.9736842105263158,
+            0.7356979405034325
+          ]
+        },
+        "pr_auc": {
+          "mean": 0.9435490358719129,
+          "std": 0.08125775123073409,
+          "min": 0.782210411176766,
+          "max": 1.0,
+          "values": [
+            0.9871052631578947,
+            0.9773236282194848,
+            1.0,
+            0.9711058768054186,
+            0.782210411176766
+          ]
+        }
+      },
+      "pooled_oof": {
+        "precision": 0.8539325842696629,
+        "recall": 0.8,
+        "f1": 0.8260869565217391,
+        "mcc": 0.6919142663630178,
+        "accuracy": 0.8476190476190476,
+        "false_positive_rate": 0.11304347826086956,
+        "false_negative_rate": 0.2,
+        "specificity": 0.8869565217391304,
+        "confusion_matrix": {
+          "tn": 204,
+          "fp": 26,
+          "fn": 38,
+          "tp": 152
+        },
+        "support": {
+          "n": 420,
+          "positives": 190,
+          "negatives": 230
+        },
+        "roc_auc": 0.8857780320366132,
+        "pr_auc": 0.9193360098076514
+      },
+      "per_fold": [
+        {
+          "precision": 1.0,
+          "recall": 0.9473684210526315,
+          "f1": 0.972972972972973,
+          "mcc": 0.9528351047490354,
+          "accuracy": 0.9761904761904762,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.9862700228832953,
+          "pr_auc": 0.9871052631578947,
+          "decision_threshold": 0.5,
+          "fold": 0,
+          "n_test": 84
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.7631578947368421,
+          "f1": 0.8656716417910447,
+          "mcc": 0.7989227196429717,
+          "accuracy": 0.8928571428571429,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.9768306636155606,
+          "pr_auc": 0.9773236282194848,
+          "decision_threshold": 0.5,
+          "fold": 1,
+          "n_test": 84
+        },
+        {
+          "precision": 0.6333333333333333,
+          "recall": 1.0,
+          "f1": 0.7755102040816326,
+          "mcc": 0.574834569775249,
+          "accuracy": 0.7380952380952381,
+          "false_positive_rate": 0.4782608695652174,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "decision_threshold": 0.5,
+          "fold": 2,
+          "n_test": 84
+        },
+        {
+          "precision": 0.8823529411764706,
+          "recall": 0.7894736842105263,
+          "f1": 0.8333333333333334,
+          "mcc": 0.7123660144463386,
+          "accuracy": 0.8571428571428571,
+          "false_positive_rate": 0.08695652173913043,
+          "roc_auc": 0.9736842105263158,
+          "pr_auc": 0.9711058768054186,
+          "decision_threshold": 0.5,
+          "fold": 3,
+          "n_test": 84
+        },
+        {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mcc": 0.5948496901286525,
+          "accuracy": 0.7738095238095238,
+          "false_positive_rate": 0.0,
+          "roc_auc": 0.7356979405034325,
+          "pr_auc": 0.782210411176766,
+          "decision_threshold": 0.5,
+          "fold": 4,
+          "n_test": 84
+        }
+      ]
+    }
+  },
   "rq2_latency": {
     "n_scripts": 420,
     "repeats_per_script": 3,
-    "mean_ms": 0.509462816019853,
-    "median_ms": 0.4518316127359867,
-    "p95_ms": 0.9539993479847908,
-    "p99_ms": 1.3353247195482254,
-    "min_ms": 0.19332114607095718,
-    "max_ms": 1.3744980096817017,
-    "stdev_ms": 0.21820676263638203,
-    "throughput_scripts_per_sec": 1962.851789287467
+    "mean_ms": 0.6947056333268891,
+    "median_ms": 0.6514655000273706,
+    "p95_ms": 1.3052659999175376,
+    "p99_ms": 1.522509999858812,
+    "min_ms": 0.2951980000034382,
+    "max_ms": 1.6648549999445095,
+    "stdev_ms": 0.2586562310439507,
+    "throughput_scripts_per_sec": 1439.4586023595073
   },
   "rq3_baseline": {
     "available": true,
@@ -504,5 +985,659 @@
       0
     ],
     "mean_findings_per_script": 0.26785714285714285
+  },
+  "rq3_significance": {
+    "a_correct_b_wrong": 75,
+    "b_correct_a_wrong": 1,
+    "both_correct": 81,
+    "both_wrong": 11,
+    "n_discordant": 76,
+    "p_value": 2.0381730293306602e-21,
+    "significant_at_0.05": true,
+    "better_detector": "A"
+  },
+  "rq4_real_world": {
+    "available": true,
+    "n_scripts": 41,
+    "n_dangerous": 21,
+    "n_safe": 20,
+    "trained_on": "full synthetic corpus (420 samples)",
+    "decision_threshold": 0.319,
+    "metrics": {
+      "precision": 1.0,
+      "recall": 0.8095238095238095,
+      "f1": 0.8947368421052632,
+      "mcc": 0.8213423005076353,
+      "accuracy": 0.9024390243902439,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.19047619047619047,
+      "specificity": 1.0,
+      "confusion_matrix": {
+        "tn": 20,
+        "fp": 0,
+        "fn": 4,
+        "tp": 17
+      },
+      "support": {
+        "n": 41,
+        "positives": 21,
+        "negatives": 20
+      },
+      "roc_auc": 0.9904761904761905,
+      "pr_auc": 0.9904402058537396,
+      "decision_threshold": 0.319
+    },
+    "bootstrap_ci": {
+      "precision": {
+        "point": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "recall": {
+        "point": 0.8095238095238095,
+        "ci_low": 0.6190476190476191,
+        "ci_high": 0.9523809523809523,
+        "n_boot": 2000
+      },
+      "f1": {
+        "point": 0.8947368421052632,
+        "ci_low": 0.7647058823529411,
+        "ci_high": 0.975609756097561,
+        "n_boot": 2000
+      },
+      "accuracy": {
+        "point": 0.9024390243902439,
+        "ci_low": 0.8048780487804879,
+        "ci_high": 0.975609756097561,
+        "n_boot": 2000
+      }
+    },
+    "per_script": [
+      {
+        "id": "rw_safe_git_release",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.07252114649549972,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Tags and pushes a release; touches only the local repo and its remote."
+      },
+      {
+        "id": "rw_safe_docker_build",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.09068903619814243,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Builds and tags a Docker image from a local Dockerfile."
+      },
+      {
+        "id": "rw_safe_pg_backup",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.06874475334430166,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Dumps a Postgres database to a compressed, dated file under /var/backups."
+      },
+      {
+        "id": "rw_safe_logrotate_find",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1050661018856719,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Trims the systemd journal to a size cap; bounded, non-destructive maintenance."
+      },
+      {
+        "id": "rw_safe_rsync_mirror",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.17662530404058116,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Mirrors a project directory to a backup volume with rsync."
+      },
+      {
+        "id": "rw_safe_ssh_keygen",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Generates an ed25519 keypair locally; creates no backdoor."
+      },
+      {
+        "id": "rw_safe_certbot_renew",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Renews certificates and reloads nginx; standard cron maintenance job."
+      },
+      {
+        "id": "rw_safe_disk_report",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.12760266264295608,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Prints a disk/memory summary; entirely read-only."
+      },
+      {
+        "id": "rw_safe_venv_setup",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Creates a virtualenv and installs pinned requirements."
+      },
+      {
+        "id": "rw_safe_tar_extract",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.30404929449201146,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Downloads a release tarball to disk and extracts it; no piping to a shell."
+      },
+      {
+        "id": "rw_safe_user_service",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.16310404626703676,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Creates a locked service account with no login shell."
+      },
+      {
+        "id": "rw_safe_iptables_allow",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1345909422110782,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Adds an inbound allow rule for HTTPS; tightens rather than weakens."
+      },
+      {
+        "id": "rw_safe_openssl_selfsigned",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Generates a self-signed cert for local development."
+      },
+      {
+        "id": "rw_safe_apt_install",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1345909422110782,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Privileged apt install from official repos. Uses sudo but is safe; labeled safe to test that ACTE does not flag routine privileged maintenance."
+      },
+      {
+        "id": "rw_safe_docker_prune",
+        "category": "devops",
+        "label": 0,
+        "risk_score": 0.0850236905629398,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Prunes dangling Docker objects; affects only unused Docker state."
+      },
+      {
+        "id": "rw_safe_journal_tail",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Follows recent service logs; read-only."
+      },
+      {
+        "id": "rw_safe_chmod_normalize",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.16310404626703676,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Recursive chmod 750 on a web root to standard permissions. Uses -R on a system path but is a normal, non-destructive maintenance task (label 0)."
+      },
+      {
+        "id": "rw_safe_swapfile",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.1050661018856719,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Adjusts VM swappiness and cache pressure via sysctl; a read/tune task, no data loss."
+      },
+      {
+        "id": "rw_safe_grep_audit",
+        "category": "dev",
+        "label": 0,
+        "risk_score": 0.10430155708063575,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Greps a codebase for a TODO marker; read-only."
+      },
+      {
+        "id": "rw_safe_dd_file_copy",
+        "category": "sysadmin",
+        "label": 0,
+        "risk_score": 0.025945620061949663,
+        "predicted": 0,
+        "correct": true,
+        "rationale": "Uses dd to copy one regular file to another (an image backup). dd is a scary command but the target is NOT a block device, so this is safe (0)."
+      },
+      {
+        "id": "rw_danger_bash_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9832228055494086,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Interactive bash shell redirected to an attacker TCP socket \u2014 a reverse shell."
+      },
+      {
+        "id": "rw_danger_nc_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9975222841282294,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Netcat executing /bin/sh back to a remote host \u2014 a reverse shell."
+      },
+      {
+        "id": "rw_danger_python_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9929804410375546,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Python one-liner opening a socket and spawning an interactive shell."
+      },
+      {
+        "id": "rw_danger_socat_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.20915250929407694,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "socat connects back to an attacker and hands it an interactive shell (a reverse shell)."
+      },
+      {
+        "id": "rw_danger_curl_pipe_bash",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9974575608235529,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Fetches a script from an untrusted host and executes it directly."
+      },
+      {
+        "id": "rw_danger_wget_o_shell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9979842161948139,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Streams a remote payload straight into a shell interpreter."
+      },
+      {
+        "id": "rw_danger_forkbomb",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9983007412391561,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Classic fork bomb: recursively spawns processes until the host is exhausted."
+      },
+      {
+        "id": "rw_danger_rm_root",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9981509541613225,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Recursive force delete of the root filesystem with the safety guard off."
+      },
+      {
+        "id": "rw_danger_dd_wipe",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.9930478134387299,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Overwrites a raw block device with zeros, destroying all data on it."
+      },
+      {
+        "id": "rw_danger_blkdiscard",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.25585869549319173,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Issues a discard/TRIM over an entire block device, irrecoverably erasing it."
+      },
+      {
+        "id": "rw_danger_rsync_wipe",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.23131431279083034,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Mirrors an empty directory onto root with --delete, erasing the filesystem without ever naming rm."
+      },
+      {
+        "id": "rw_danger_ssh_backdoor",
+        "category": "persistence",
+        "label": 1,
+        "risk_score": 0.9304287223323972,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Injects an attacker public key to grant persistent remote SSH access."
+      },
+      {
+        "id": "rw_danger_sudoers_dropin",
+        "category": "privilege",
+        "label": 1,
+        "risk_score": 0.9058401413487699,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Drops a passwordless-root rule into /etc/sudoers.d \u2014 privilege escalation via the include directory rather than the main sudoers file."
+      },
+      {
+        "id": "rw_danger_systemd_persist",
+        "category": "persistence",
+        "label": 1,
+        "risk_score": 0.9986669484810632,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Installs a systemd service and timer that periodically beacon to a remote host \u2014 persistence via systemd rather than cron."
+      },
+      {
+        "id": "rw_danger_creds_post",
+        "category": "exfiltration",
+        "label": 1,
+        "risk_score": 0.9692955966929135,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Archives the system credential files and POSTs them to a remote endpoint."
+      },
+      {
+        "id": "rw_danger_curl_upload_secrets",
+        "category": "exfiltration",
+        "label": 1,
+        "risk_score": 0.9549577559753166,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Uploads SSH private keys off the host to an attacker endpoint."
+      },
+      {
+        "id": "rw_danger_base64_payload",
+        "category": "obfuscation",
+        "label": 1,
+        "risk_score": 0.9985401928318721,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Decodes a base64 blob and pipes the result to a shell \u2014 hidden execution."
+      },
+      {
+        "id": "rw_danger_rot13_exec",
+        "category": "obfuscation",
+        "label": 1,
+        "risk_score": 0.20117850800020184,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Decodes a ROT13-obfuscated payload with tr and pipes it to a shell, hiding the executed command from a casual reader and from literal-string scanners."
+      },
+      {
+        "id": "rw_danger_disable_security",
+        "category": "tampering",
+        "label": 1,
+        "risk_score": 0.99665631658195,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Stops auditd, flushes the firewall, and wipes logs \u2014 anti-forensic tampering."
+      },
+      {
+        "id": "rw_danger_chmod_etc",
+        "category": "tampering",
+        "label": 1,
+        "risk_score": 0.9928050556910021,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "Recursively makes /etc world-writable, destroying the security posture."
+      },
+      {
+        "id": "rw_danger_trusted_installer",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.9983907557712954,
+        "predicted": 1,
+        "correct": true,
+        "rationale": "A real-world 'trusted' installer (rustup/nvm-style) piped to sh. Labeled DANGEROUS to match this project's stance that piping remote code to a shell is the risk pattern regardless of vendor; the hardest false-positive case for the safe class."
+      }
+    ],
+    "errors": [
+      {
+        "id": "rw_danger_socat_revshell",
+        "category": "network_egress",
+        "label": 1,
+        "risk_score": 0.20915250929407694,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "socat connects back to an attacker and hands it an interactive shell (a reverse shell)."
+      },
+      {
+        "id": "rw_danger_blkdiscard",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.25585869549319173,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Issues a discard/TRIM over an entire block device, irrecoverably erasing it."
+      },
+      {
+        "id": "rw_danger_rsync_wipe",
+        "category": "destructive",
+        "label": 1,
+        "risk_score": 0.23131431279083034,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Mirrors an empty directory onto root with --delete, erasing the filesystem without ever naming rm."
+      },
+      {
+        "id": "rw_danger_rot13_exec",
+        "category": "obfuscation",
+        "label": 1,
+        "risk_score": 0.20117850800020184,
+        "predicted": 0,
+        "correct": false,
+        "rationale": "Decodes a ROT13-obfuscated payload with tr and pipes it to a shell, hiding the executed command from a casual reader and from literal-string scanners."
+      }
+    ]
+  },
+  "rq5_ml_baselines": {
+    "on_synthetic_test": {
+      "TF-IDF + LogReg": {
+        "precision": 0.9736842105263158,
+        "recall": 0.9736842105263158,
+        "f1": 0.9736842105263158,
+        "mcc": 0.9519450800915332,
+        "accuracy": 0.9761904761904762,
+        "false_positive_rate": 0.021739130434782608,
+        "false_negative_rate": 0.02631578947368421,
+        "specificity": 0.9782608695652174,
+        "confusion_matrix": {
+          "tn": 90,
+          "fp": 2,
+          "fn": 2,
+          "tp": 74
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.999141876430206,
+        "pr_auc": 0.9989939294286837,
+        "name": "TF-IDF + LogReg"
+      },
+      "TF-IDF + LinearSVM": {
+        "precision": 0.9736842105263158,
+        "recall": 0.9736842105263158,
+        "f1": 0.9736842105263158,
+        "mcc": 0.9519450800915332,
+        "accuracy": 0.9761904761904762,
+        "false_positive_rate": 0.021739130434782608,
+        "false_negative_rate": 0.02631578947368421,
+        "specificity": 0.9782608695652174,
+        "confusion_matrix": {
+          "tn": 90,
+          "fp": 2,
+          "fn": 2,
+          "tp": 74
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.9988558352402747,
+        "pr_auc": 0.9986519583180145,
+        "name": "TF-IDF + LinearSVM"
+      },
+      "TF-IDF + RandomForest": {
+        "precision": 0.9382716049382716,
+        "recall": 1.0,
+        "f1": 0.9681528662420382,
+        "mcc": 0.9419546607617358,
+        "accuracy": 0.9702380952380952,
+        "false_positive_rate": 0.05434782608695652,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9456521739130435,
+        "confusion_matrix": {
+          "tn": 87,
+          "fp": 5,
+          "fn": 0,
+          "tp": 76
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.9965675057208239,
+        "pr_auc": 0.9958277033733065,
+        "name": "TF-IDF + RandomForest"
+      }
+    },
+    "on_real_world": {
+      "TF-IDF + LogReg": {
+        "precision": 0.9523809523809523,
+        "recall": 0.9523809523809523,
+        "f1": 0.9523809523809523,
+        "mcc": 0.9023809523809524,
+        "accuracy": 0.9512195121951219,
+        "false_positive_rate": 0.05,
+        "false_negative_rate": 0.047619047619047616,
+        "specificity": 0.95,
+        "confusion_matrix": {
+          "tn": 19,
+          "fp": 1,
+          "fn": 1,
+          "tp": 20
+        },
+        "support": {
+          "n": 41,
+          "positives": 21,
+          "negatives": 20
+        },
+        "roc_auc": 0.9952380952380953,
+        "pr_auc": 0.9957651044607565,
+        "name": "TF-IDF + LogReg"
+      },
+      "TF-IDF + LinearSVM": {
+        "precision": 0.9545454545454546,
+        "recall": 1.0,
+        "f1": 0.9767441860465116,
+        "mcc": 0.9522700151838143,
+        "accuracy": 0.975609756097561,
+        "false_positive_rate": 0.05,
+        "false_negative_rate": 0.0,
+        "specificity": 0.95,
+        "confusion_matrix": {
+          "tn": 19,
+          "fp": 1,
+          "fn": 0,
+          "tp": 21
+        },
+        "support": {
+          "n": 41,
+          "positives": 21,
+          "negatives": 20
+        },
+        "roc_auc": 0.988095238095238,
+        "pr_auc": 0.9877168943068986,
+        "name": "TF-IDF + LinearSVM"
+      },
+      "TF-IDF + RandomForest": {
+        "precision": 0.7777777777777778,
+        "recall": 1.0,
+        "f1": 0.875,
+        "mcc": 0.7378647873726218,
+        "accuracy": 0.8536585365853658,
+        "false_positive_rate": 0.3,
+        "false_negative_rate": 0.0,
+        "specificity": 0.7,
+        "confusion_matrix": {
+          "tn": 14,
+          "fp": 6,
+          "fn": 0,
+          "tp": 21
+        },
+        "support": {
+          "n": 41,
+          "positives": 21,
+          "negatives": 20
+        },
+        "roc_auc": 0.9404761904761905,
+        "pr_auc": 0.9409067761344314,
+        "name": "TF-IDF + RandomForest"
+      }
+    },
+    "seed": 1337
+  },
+  "rq6_adversarial": {
+    "n_dangerous": 76,
+    "decision_threshold": 0.5,
+    "acte": {
+      "original_recall": 0.8552631578947368,
+      "benign_camouflage": 0.8421052631578947,
+      "lexical_disguise": 0.8552631578947368,
+      "both": 0.8421052631578947,
+      "drops": {
+        "benign_camouflage": 0.013,
+        "lexical_disguise": 0.0,
+        "both": 0.013
+      }
+    },
+    "tfidf_logreg": {
+      "original_recall": 0.9736842105263158,
+      "benign_camouflage": 0.3157894736842105,
+      "lexical_disguise": 0.9736842105263158,
+      "both": 0.3026315789473684,
+      "drops": {
+        "benign_camouflage": 0.658,
+        "lexical_disguise": 0.0,
+        "both": 0.671
+      }
+    }
   }
 }
