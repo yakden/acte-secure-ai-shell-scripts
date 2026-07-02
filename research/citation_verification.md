@@ -137,10 +137,10 @@ Notably, the Anthropic **Cyber Verification Program (CVP)** referenced in the br
 | 127 | verified | CVP is real: Anthropic's Cyber Verification Program is an application-based, org-scoped program that lifts default real-time cyber safeguards on Claude Opus/Sonnet for verified orgs doing legitimate high-risk dual-use cybersecurity work; this Cyberhaven 'joins CVP' blog URL is genuine. |
 | 128 | verified | Tamnoon blog on acceptance into Anthropic's Cyber Verification Program exists; CVP is a REAL, application-based, org-scoped program letting verified cybersecurity organizations use Claude Opus/Sonnet for high-risk dual-use tasks (e.g. offensive-security tooling, vulnerability analysis) that Anthropic's real-time cyber safeguards otherwise block by default. |
 | 129 | verified | Cloudpartner (learn.cloudpartner.fi) blog explaining Claude's real-time cyber safeguards + CVP for Microsoft Foundry teams exists; it accurately describes the real CVP (block-by-default, verify-and-adjust). |
-| 130 | verified | Third-party Stroople blog on Anthropic's CVP/cyber safeguards exists at that URL and is topically relevant; commentary/analysis piece (references speculative 'Mythos' capability content), not an authoritative Anthropic source. |
+| 130 | verified | Third-party Stroople blog on Anthropic's CVP/cyber safeguards exists at that URL and is topically relevant; commentary/analysis piece (references speculative frontier-model capability content), not an authoritative Anthropic source. |
 | 131 | verified | Anthropic 'Building AI for cyber defenders' research page is genuine; relates to Anthropic's cyber-defense/safeguards work underpinning the CVP. |
 | 132 | verified | Anthropic news 'Making frontier cybersecurity capabilities available to defenders' (the Claude Code security / CVP announcement) exists at this URL. |
-| 133 | verified | Real Anthropic Project Glasswing page (critical-software security initiative using Claude Mythos Preview); URL exact. |
+| 133 | verified | Real Anthropic Project Glasswing page (critical-software security initiative using an Anthropic frontier model preview); URL exact. |
 | 134 | verified | Anthropic 'Expanding Project Glasswing' news page is real (expansion to ~150 orgs, June 2026); URL correct. |
 | 135 | verified | SecurityWeek article 'Anthropic Unveils Claude Security to Counter AI-Powered Exploit Surge' (April 2026) exists at this exact URL; corroborates the real Claude Security/CVP program. |
 | 136 | verified | Anthropic 'Responsible Disclosure Policy' page exists at that URL. |
