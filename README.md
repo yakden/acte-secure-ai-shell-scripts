@@ -38,11 +38,15 @@ base, and combines these signals through a transparent logistic **risk
 function** `R(s) = σ(b + Σ wᵢxᵢ)` with a strictly decreasing **trust function**
 `T(s) = 1 − R(s)`. The continuous score is mapped to a discrete trust level that
 drives an adaptive execution policy. An online feedback-learning component adapts
-the model from labeled outcomes. On a reproducible 420-script benchmark spanning
-five categories — including deliberately hard negatives and evasive hard
-positives — ACTE achieves **F1 = 0.915** (precision 0.985, recall 0.855,
-ROC-AUC 0.976) at a mean analysis cost of **~0.51 ms/script**, while reducing the
-false-positive rate by **93.8%** relative to a ShellCheck baseline.
+the model from labeled outcomes. On a reproducible 420-script benchmark, the honest generalisation figure is a
+**leave-template-out F1 = 0.823 ± 0.101** (single tuned split F1 = 0.915), at a mean
+analysis cost of **~0.5 ms/script**. Against strong learned baselines ACTE is
+competitive rather than dominant; its value is the lowest false-positive rate, an
+interpretable 13-feature decision, and a **content-derived policy really enforced
+by the kernel via seccomp-BPF**. ShellCheck is included only to show that a linter
+is the wrong instrument, not as a headline.
+
+> **How to read the numbers (post-review revision).** We now lead with the honest generalisation figures: leave-template-out F1 = 0.823 ± 0.101 (cluster-bootstrap F1 in [0.79, 0.99]), malicious-class recall = 0.75 (not the 0.855 aggregate), and a default-threshold FPR ≈ 0.10 (the 0.011 is a tuned single split). Enforcement is now real (seccomp-BPF), adversarial robustness is not claimed (complementary blind spots), and online learning is not claimed as a benefit. See the paper's RQ6b–RQ10 and Threats to Validity.
 
 The headline is not a single-split artifact, and we report the unflattering
 numbers alongside the flattering ones. Five-fold cross-validation (at the fixed
@@ -75,7 +79,14 @@ dominant**, on raw F1; its edge is the lowest false-positive rate, an interpreta
 | Leave-template-out CV F1 (τ=0.5) | **0.823 ± 0.101** |
 | Real-world holdout (train-synthetic → test-real) | **F1 0.895**, precision 1.000, FPR 0.000, ROC-AUC 0.990 (n=41) |
 | Learned TF-IDF baselines (real holdout) | F1 0.95–0.98 at FPR 0.05–0.30 — ACTE competitive, lowest FPR |
-| Adaptive evasion (benign camouflage) | ACTE recall 0.86→0.84; TF-IDF recall 0.97→0.32 — ACTE far more robust |
+| Adaptive evasion (additive camouflage) | ACTE recall 0.86→0.84; TF-IDF 0.97→0.32 |
+| Adaptive evasion (semantic substitution) | ACTE recall 0.86→0.58; TF-IDF 0.97→0.97 — **complementary blind spots, neither robust** |
+| Cluster (block) bootstrap F1 CI | **[0.79, 0.99]** (~2× the naive interval; the honest spread) |
+| Real-holdout FPR (0/20) Wilson CI | **[0.00, 0.16]** — "zero FP" is a point estimate, not a guarantee |
+| Calibration | ECE 0.076 → 0.055 (isotonic); tiers are approximate, recalibrate per deployment |
+| Stronger baselines | GBDT on same 13 feats F1 0.923; feat+TF-IDF union 0.993 (near-separable corpus) |
+| Online learning | **not validated** (no drift benefit; overfits on misses; 6 labels poison a canary) |
+| Real seccomp enforcement | content-derived deny-set compiled to a **real BPF filter**; kernel enforces 5/5 (SIGSYS) |
 | ShellCheck (a linter, not a security tool) | FPR 0.174, recall 0.079 — motivates the work, not a headline |
 
 Full tables (per-category detection, ablation study, cross-validation with the
