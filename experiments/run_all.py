@@ -192,6 +192,32 @@ def main() -> int:
           % (adv["tfidf_logreg"]["original_recall"], adv["tfidf_logreg"]["benign_camouflage"],
              adv["tfidf_logreg"]["drops"]["benign_camouflage"]))
 
+    # 10b. revision experiments (RQ6b, RQ7-RQ10) ----------------------------
+    print("\n[10b/11] Revision experiments (calibration, stronger baselines, "
+          "cluster bootstrap, paired ablation, systematic adversarial, online, "
+          "real seccomp) ...")
+    from experiments import review_extras
+    extras = review_extras.run_all_extras(
+        samples, train, test, acte["full_test_pred"], acte["full_test_scores"],
+        real_world_fp=(real["metrics"]["confusion_matrix"]["fp"] if real.get("available") else 0),
+        real_world_neg=(real["n_safe"] if real.get("available") else 20),
+        epochs=EPOCHS, seed=SEED)
+    cb = extras["cluster_bootstrap"]
+    print("  cluster-bootstrap F1 CI [%.3f, %.3f] (naive width x%s)"
+          % (cb["cluster_bootstrap"]["f1"]["low"], cb["cluster_bootstrap"]["f1"]["high"],
+             cb["width_ratio"]["f1"]))
+    print("  calibration ECE raw=%.3f isotonic=%.3f"
+          % (extras["rq7_calibration"]["raw"]["ece"],
+             extras["rq7_calibration"]["isotonic"]["ece"]))
+    adv_acte = extras["rq6b_adversarial_budget"]["detectors"]["ACTE"]["evasion_at_max_budget"]
+    print("  semantic-substitution evasion of ACTE: %+.3f recall" % adv_acte)
+    print("  feedback poisoning: %s labels flip a canary"
+          % extras["rq9_feedback_poisoning"]["poisoned_labels_to_flip"])
+    enf = extras["rq10_enforcement"]
+    if enf.get("seccomp_available"):
+        print("  real seccomp enforcement: %d/%d scripts enforced correctly"
+              % (enf["n_all_correct"], enf["n_scripts"]))
+
     # 11. write results -----------------------------------------------------
     print("\n[11/11] Writing results ...")
     results = {
@@ -209,6 +235,7 @@ def main() -> int:
         "rq4_real_world": real,
         "rq5_ml_baselines": ml,
         "rq6_adversarial": adv,
+        "rq_revision": extras,
     }
     results_json = os.path.join(RESULTS_DIR, "results.json")
     with open(results_json, "w", encoding="utf-8") as fh:
@@ -611,6 +638,65 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
                  "but does not yield an easy benign-camouflage evasion of ACTE in practice; "
                  "the evasions that do work (RQ4) are novel techniques absent from the "
                  "signature base, not cosmetic edits.\n")
+
+    # Revision experiments (RQ6b, RQ7-RQ10)
+    ex = results.get("rq_revision")
+    if ex:
+        L.append("## Revision experiments (RQ6b, RQ7-RQ10)\n")
+        c7 = ex["rq7_calibration"]
+        L.append(f"- **RQ7 calibration.** Raw ECE = {_fmt(c7['raw']['ece'],3)} "
+                 f"(Brier {_fmt(c7['raw']['brier'],3)}); isotonic recalibration → ECE "
+                 f"{_fmt(c7['isotonic']['ece'],3)}. The risk score is only moderately "
+                 "calibrated, so the fixed trust-level thresholds are approximate and "
+                 "should be recalibrated per deployment.")
+        b8 = ex["rq8_stronger_baselines"]
+        L.append(f"- **RQ8 stronger baselines.** GBDT on the same 13 features F1 = "
+                 f"{_fmt(b8['gbdt_on_acte_features']['f1'],3)} (≈ the logistic model, so "
+                 f"the ceiling is the features, not linearity); feature+TF-IDF union F1 = "
+                 f"{_fmt(b8['union_features_plus_tfidf']['f1'],3)} (complementary, and the "
+                 f"corpus is near-separable); tuned TF-IDF F1 = "
+                 f"{_fmt(b8['tfidf_logreg_tuned']['f1'],3)} (C={b8['tfidf_logreg_tuned'].get('best_C')}).")
+        cb = ex["cluster_bootstrap"]
+        L.append(f"- **Cluster bootstrap.** Resampling whole templates widens the F1 CI to "
+                 f"[{_fmt(cb['cluster_bootstrap']['f1']['low'],3)}, "
+                 f"{_fmt(cb['cluster_bootstrap']['f1']['high'],3)}] — about "
+                 f"{cb['width_ratio']['f1']}× the naive per-sample interval; the earlier "
+                 "CIs were too narrow under template clustering.")
+        w = ex["real_world_fpr_wilson"]
+        L.append(f"- **Real-world FPR interval.** The real-holdout false-positive rate of "
+                 f"{_fmt(w['point'],3)} has a Wilson 95% CI [{_fmt(w['low'],3)}, {_fmt(w['high'],3)}] "
+                 "— consistent with a true FPR up to ~16%, so \"zero false positives\" is a "
+                 "point estimate on 20 negatives, not a guarantee.")
+        asig = ex["ablation_significance"]["comparisons"]
+        sig_names = [n for n, c in asig.items() if c["significant_at_0.05"]]
+        L.append(f"- **Paired ablation tests.** Only {', '.join(sig_names)} differ from the "
+                 "full model at α=0.05 (McNemar); SemanticParser and ContextExtractor "
+                 "effects are within noise, so no component ranking beyond ThreatIntel and "
+                 "FeedbackLearning is asserted.")
+        ab = ex["rq6b_adversarial_budget"]["detectors"]
+        L.append(f"- **RQ6b systematic adversarial.** Semantic substitution (behaviour-"
+                 f"preserving) evades ACTE by {_fmt(ab['ACTE']['evasion_at_max_budget'],3)} "
+                 f"recall but the lexical baseline by "
+                 f"{_fmt(ab['TF-IDF + LogReg']['evasion_at_max_budget'],3)} — the opposite of "
+                 "RQ6, so the two model families have complementary blind spots and neither "
+                 "is robustly superior.")
+        pz = ex["rq9_feedback_poisoning"]; dr = ex["rq9_concept_drift"]
+        L.append(f"- **RQ9 online dynamics.** On the novel '{dr['drift_category']}' family "
+                 f"online adaptation recovered {_fmt(dr['recall_recovered'],3)} recall over "
+                 f"frozen (no benefit; signatures already cover it), and adapting on the "
+                 f"model's genuine misses recovers them only by collapsing precision. "
+                 f"The feedback loop is also poisonable: {pz['poisoned_labels_to_flip']} "
+                 "mislabelled updates flip a risk-1.0 canary. We therefore do not claim "
+                 "online learning as a validated benefit.")
+        enf = ex["rq10_enforcement"]
+        if enf.get("seccomp_available"):
+            L.append(f"- **RQ10 real enforcement.** A content-derived syscall deny-set is "
+                     f"compiled to a real seccomp-BPF filter and installed unprivileged; the "
+                     f"kernel correctly enforced it on {enf['n_all_correct']}/{enf['n_scripts']} "
+                     "scripts (denied syscalls killed with SIGSYS, controls permitted). Two "
+                     "scripts with different commands get different filters — genuine "
+                     "content synthesis, really enforced.")
+        L.append("")
 
     # Figures
     L.append("## Figures\n")

