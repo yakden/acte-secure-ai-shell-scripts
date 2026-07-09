@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at_utc": "2026-07-03T15:47:26.761720+00:00",
+    "generated_at_utc": "2026-07-09T21:08:40.042955+00:00",
     "seed": 1337,
     "epochs": 40,
     "test_fraction": 0.4,
@@ -759,14 +759,14 @@
   "rq2_latency": {
     "n_scripts": 420,
     "repeats_per_script": 3,
-    "mean_ms": 0.5275431261896388,
-    "median_ms": 0.49131499997656647,
-    "p95_ms": 1.0008640001615277,
-    "p99_ms": 1.1129429999527929,
-    "min_ms": 0.21926399995209067,
-    "max_ms": 1.316405999887138,
-    "stdev_ms": 0.202024302122123,
-    "throughput_scripts_per_sec": 1895.5796225094296
+    "mean_ms": 0.47976768809716996,
+    "median_ms": 0.4398079998964022,
+    "p95_ms": 0.9316040000157955,
+    "p99_ms": 1.0111419999248028,
+    "min_ms": 0.20322900013525214,
+    "max_ms": 1.085710000097606,
+    "stdev_ms": 0.18378120378156845,
+    "throughput_scripts_per_sec": 2084.342119758312
   },
   "rq3_baseline": {
     "available": true,
@@ -2189,6 +2189,219 @@
           "all_correct": true
         }
       ]
+    },
+    "rq11_external_benign": {
+      "available": true,
+      "n_scripts": 22,
+      "n_benign": 22,
+      "decision_threshold": 0.319,
+      "false_positives": {
+        "ACTE": {
+          "count": 19,
+          "fpr": 0.864,
+          "wilson_ci": {
+            "point": 0.8636363636363636,
+            "low": 0.6666458812053,
+            "high": 0.9525108273576373
+          }
+        },
+        "TF-IDF + LogReg": {
+          "count": 0,
+          "fpr": 0.0,
+          "wilson_ci": {
+            "point": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.14865952572596125
+          }
+        },
+        "TF-IDF + LinearSVM": {
+          "count": 0,
+          "fpr": 0.0,
+          "wilson_ci": {
+            "point": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.14865952572596125
+          }
+        },
+        "TF-IDF + RandomForest": {
+          "count": 0,
+          "fpr": 0.0,
+          "wilson_ci": {
+            "point": 0.0,
+            "low": 1.3877787807814457e-17,
+            "high": 0.14865952572596125
+          }
+        }
+      },
+      "acte_flagged": [
+        [
+          "ext_nvm_install",
+          0.552
+        ],
+        [
+          "ext_ohmyzsh_install",
+          0.986
+        ],
+        [
+          "ext_rbenv_installer",
+          0.421
+        ],
+        [
+          "ext_nodesource_setup",
+          0.37
+        ],
+        [
+          "ext_rustup_init",
+          0.989
+        ],
+        [
+          "ext_helm_get3",
+          0.863
+        ],
+        [
+          "ext_pyenv_installer",
+          0.444
+        ],
+        [
+          "ext_docker_install",
+          1.0
+        ],
+        [
+          "ext_homebrew_install",
+          0.739
+        ],
+        [
+          "ext_starship_install",
+          0.65
+        ],
+        [
+          "ext_deno_install",
+          0.38
+        ],
+        [
+          "ext_zoxide_install",
+          0.941
+        ],
+        [
+          "ext_atuin_install",
+          1.0
+        ],
+        [
+          "ext_volta_install",
+          0.447
+        ],
+        [
+          "ext_sdkman_install",
+          0.686
+        ],
+        [
+          "ext_fnm_install",
+          0.432
+        ],
+        [
+          "ext_k3s_install",
+          1.0
+        ],
+        [
+          "ext_p10k_wizard",
+          0.972
+        ],
+        [
+          "ext_ansible_hacking",
+          0.509
+        ]
+      ],
+      "sources": [
+        {
+          "id": "ext_nvm_install",
+          "provenance": "official installer/tool from nvm-sh/nvm"
+        },
+        {
+          "id": "ext_ohmyzsh_install",
+          "provenance": "official installer/tool from ohmyzsh/ohmyzsh"
+        },
+        {
+          "id": "ext_rbenv_installer",
+          "provenance": "official installer/tool from rbenv/rbenv-installer"
+        },
+        {
+          "id": "ext_nodesource_setup",
+          "provenance": "official installer/tool from nodesource/distributions"
+        },
+        {
+          "id": "ext_rustup_init",
+          "provenance": "official installer/tool from rust-lang/rustup"
+        },
+        {
+          "id": "ext_helm_get3",
+          "provenance": "official installer/tool from helm/helm"
+        },
+        {
+          "id": "ext_pyenv_installer",
+          "provenance": "official installer/tool from pyenv/pyenv-installer"
+        },
+        {
+          "id": "ext_docker_install",
+          "provenance": "official installer/tool from docker/docker-install"
+        },
+        {
+          "id": "ext_homebrew_install",
+          "provenance": "official installer/tool from Homebrew/install"
+        },
+        {
+          "id": "ext_starship_install",
+          "provenance": "official installer/tool from starship/starship"
+        },
+        {
+          "id": "ext_deno_install",
+          "provenance": "official installer/tool from denoland/deno_install"
+        },
+        {
+          "id": "ext_zoxide_install",
+          "provenance": "official installer/tool from ajeetdsouza/zoxide"
+        },
+        {
+          "id": "ext_atuin_install",
+          "provenance": "official installer/tool from atuinsh/atuin"
+        },
+        {
+          "id": "ext_volta_install",
+          "provenance": "official installer/tool from volta-cli/volta"
+        },
+        {
+          "id": "ext_sdkman_install",
+          "provenance": "official installer/tool from sdkman/sdkman-cli"
+        },
+        {
+          "id": "ext_fnm_install",
+          "provenance": "official installer/tool from Schniz/fnm"
+        },
+        {
+          "id": "ext_k3s_install",
+          "provenance": "official installer/tool from k3s-io/k3s"
+        },
+        {
+          "id": "ext_gitflow_install",
+          "provenance": "official installer/tool from nvie/gitflow"
+        },
+        {
+          "id": "ext_tpm_install",
+          "provenance": "official installer/tool from tmux-plugins/tpm"
+        },
+        {
+          "id": "ext_p10k_wizard",
+          "provenance": "official installer/tool from romkatv/powerlevel10k"
+        },
+        {
+          "id": "ext_certbot_dev",
+          "provenance": "official installer/tool from certbot/certbot"
+        },
+        {
+          "id": "ext_ansible_hacking",
+          "provenance": "official installer/tool from ansible/ansible"
+        }
+      ],
+      "note": "Benign labels are by provenance (official installers of popular OSS), not independent human annotation; a third-party dangerous corpus, real LLM outputs, and inter-annotator agreement remain future work."
     }
   }
 }

@@ -2,7 +2,7 @@
 
 > All numbers below were produced by a real, reproducible run of the ACTE prototype (`python -m experiments.run_all`). Nothing is hardcoded.
 
-- Generated (UTC): `2026-07-03T15:47:26.761720+00:00`
+- Generated (UTC): `2026-07-09T21:08:40.042955+00:00`
 - Seed: `1337`  |  Training epochs: `40`  |  Test fraction: `0.4`
 - Python `3.11.15`  |  Platform `Linux-6.18.5-x86_64-with-glibc2.39`
 - Dataset: **420 samples** (train=252, test=168, test positives=76)
@@ -101,14 +101,14 @@ Pooled out-of-fold (Leave-template-out): F1=0.826, precision=0.854, recall=0.800
 
 | Statistic | Milliseconds |
 |---|---|
-| Mean | 0.528 |
-| Median | 0.491 |
-| p95 | 1.001 |
-| p99 | 1.113 |
-| Min | 0.219 |
-| Max | 1.316 |
-| Stdev | 0.202 |
-| Throughput (scripts/s) | 1895.6 |
+| Mean | 0.480 |
+| Median | 0.440 |
+| p95 | 0.932 |
+| p99 | 1.011 |
+| Min | 0.203 |
+| Max | 1.086 |
+| Stdev | 0.184 |
+| Throughput (scripts/s) | 2084.3 |
 
 Measured over 420 scripts, 3 repeats each (min taken).
 
@@ -196,6 +196,7 @@ The finding reverses the raw-F1 story of RQ5. Benign camouflage costs ACTE +0.01
 - **RQ6b systematic adversarial.** Semantic substitution (behaviour-preserving) evades ACTE by 0.276 recall but the lexical baseline by 0.000 — the opposite of RQ6, so the two model families have complementary blind spots and neither is robustly superior.
 - **RQ9 online dynamics.** On the novel 'obfuscated' family online adaptation recovered 0.000 recall over frozen (no benefit; signatures already cover it), and adapting on the model's genuine misses recovers them only by collapsing precision. The feedback loop is also poisonable: 6 mislabelled updates flip a risk-1.0 canary. We therefore do not claim online learning as a validated benefit.
 - **RQ10 real enforcement.** A content-derived syscall deny-set is compiled to a real seccomp-BPF filter and installed unprivileged; the kernel correctly enforced it on 5/5 scripts (denied syscalls killed with SIGSYS, controls permitted). Two scripts with different commands get different filters — genuine content synthesis, really enforced.
+- **RQ11 real third-party benign corpus (construct validity).** On 22 genuinely external benign scripts (official installers of popular OSS — nvm, rustup, docker, homebrew, …), frozen ACTE flags 19/22 as risky (FPR 0.864, Wilson [0.667, 0.953]), while the TF-IDF baselines flag 0.000. ACTE's headline low false-positive rate is therefore a synthetic-corpus artefact: the very idioms real installers use (`curl | bash`, `sudo`, piping remote content) are exactly what the hand-built corpus penalises. This is the sharpest limitation in the paper and we report it prominently. Labels are by provenance, not independent human annotation.
 
 ## Figures
 

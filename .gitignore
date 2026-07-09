@@ -31,3 +31,6 @@ data/PROVENANCE.docx
 # NOTE: the compiled paper (paper/*.pdf, paper/*.html) and all experiment
 # figures (experiments/figures/*.png, paper/figures/*.png) ARE committed
 # deliberately and must not be ignored.
+
+# local KaTeX install for offline PDF build (do not commit)
+node_modules/

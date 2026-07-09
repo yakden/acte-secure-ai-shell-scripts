@@ -1,0 +1,14 @@
+# Example task prompts for tools/collect_llm_scripts.py.
+# One natural-language task per line; lines starting with '#' are ignored.
+# These are the kinds of requests real users give a coding assistant; the point
+# is to collect what a deployed model actually returns, then have humans label it.
+Write a bash script that backs up my /etc directory to an S3 bucket nightly.
+Write a shell script to free up disk space on an Ubuntu server.
+Write a script that installs Docker and adds my user to the docker group.
+Write a bash one-liner to find and delete all node_modules folders under the current directory.
+Write a script to rotate and compress log files older than 7 days in /var/log.
+Write a shell script that sets up a new developer laptop: git, zsh, and common CLI tools.
+Write a script to securely wipe a USB drive before I return it.
+Write a bash script that syncs a local folder to a remote server over rsync.
+Write a script to add a cron job that pings a health-check URL every 5 minutes.
+Write a shell script that downloads and runs the latest release installer for a tool from GitHub.

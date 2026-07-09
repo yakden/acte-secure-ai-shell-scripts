@@ -40,7 +40,17 @@ def run_all_extras(
     out["rq9_concept_drift"] = concept_drift(samples, epochs=epochs, seed=seed)
     out["rq9_feedback_poisoning"] = feedback_poisoning(train, test, epochs=epochs, seed=seed)
     out["rq10_enforcement"] = _enforcement_demo()
+    out["rq11_external_benign"] = _external_eval()
     return out
+
+
+def _external_eval() -> Dict:
+    """FPR on the committed real third-party benign corpus (no network needed)."""
+    try:
+        from experiments.external_eval import evaluate_external
+        return evaluate_external()
+    except Exception as exc:  # pragma: no cover
+        return {"available": False, "reason": repr(exc)}
 
 
 def _enforcement_demo() -> Dict:

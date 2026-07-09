@@ -217,6 +217,11 @@ def main() -> int:
     if enf.get("seccomp_available"):
         print("  real seccomp enforcement: %d/%d scripts enforced correctly"
               % (enf["n_all_correct"], enf["n_scripts"]))
+    xb = extras["rq11_external_benign"]
+    if xb.get("available"):
+        print("  real third-party benign FPR: ACTE=%.3f vs TF-IDF+LogReg=%.3f (n=%d)"
+              % (xb["false_positives"]["ACTE"]["fpr"],
+                 xb["false_positives"]["TF-IDF + LogReg"]["fpr"], xb["n_scripts"]))
 
     # 11. write results -----------------------------------------------------
     print("\n[11/11] Writing results ...")
@@ -323,6 +328,16 @@ def _fmt(x, nd=4):
     if isinstance(x, float):
         return f"{x:.{nd}f}"
     return str(x)
+
+
+def _ci(interval, nd=3):
+    if not interval:
+        return "n/a"
+    if isinstance(interval, dict):
+        lo, hi = interval.get("low"), interval.get("high")
+    else:
+        lo, hi = interval[0], interval[1]
+    return f"[{lo:.{nd}f}, {hi:.{nd}f}]"
 
 
 def render_markdown(results, acte, baseline, lat, split) -> str:
@@ -696,6 +711,24 @@ def render_markdown(results, acte, baseline, lat, split) -> str:
                      "scripts (denied syscalls killed with SIGSYS, controls permitted). Two "
                      "scripts with different commands get different filters — genuine "
                      "content synthesis, really enforced.")
+        ext_b = ex.get("rq11_external_benign", {})
+        if ext_b.get("available"):
+            fp = ext_b["false_positives"]
+            acte = fp.get("ACTE", {})
+            base_fprs = [v["fpr"] for k, v in fp.items() if k != "ACTE"]
+            best_base = min(base_fprs) if base_fprs else None
+            L.append(
+                f"- **RQ11 real third-party benign corpus (construct validity).** On "
+                f"{ext_b['n_benign']} genuinely external benign scripts (official installers "
+                f"of popular OSS — nvm, rustup, docker, homebrew, …), frozen ACTE flags "
+                f"{acte.get('count')}/{ext_b['n_benign']} as risky "
+                f"(FPR {_fmt(acte.get('fpr'),3)}, Wilson {_ci(acte.get('wilson_ci'))}), while the "
+                f"TF-IDF baselines flag {_fmt(best_base,3) if best_base is not None else 'n/a'}. "
+                "ACTE's headline low false-positive rate is therefore a synthetic-corpus "
+                "artefact: the very idioms real installers use (`curl | bash`, `sudo`, piping "
+                "remote content) are exactly what the hand-built corpus penalises. This is the "
+                "sharpest limitation in the paper and we report it prominently. Labels are by "
+                "provenance, not independent human annotation.")
         L.append("")
 
     # Figures

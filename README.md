@@ -41,12 +41,15 @@ drives an adaptive execution policy. An online feedback-learning component adapt
 the model from labeled outcomes. On a reproducible 420-script benchmark, the honest generalisation figure is a
 **leave-template-out F1 = 0.823 ± 0.101** (single tuned split F1 = 0.915), at a mean
 analysis cost of **~0.5 ms/script**. Against strong learned baselines ACTE is
-competitive rather than dominant; its value is the lowest false-positive rate, an
-interpretable 13-feature decision, and a **content-derived policy really enforced
-by the kernel via seccomp-BPF**. ShellCheck is included only to show that a linter
-is the wrong instrument, not as a headline.
+competitive rather than dominant; its remaining value is an interpretable
+13-feature decision and a **content-derived policy really enforced by the kernel
+via seccomp-BPF** — *not* a lower false-positive rate: on 22 genuinely
+third-party benign installers ACTE flags 19 (FPR 0.86) while the TF-IDF baselines
+flag none, so its in-corpus FPR edge is a synthetic-corpus artefact (RQ11).
+ShellCheck is included only to show that a linter is the wrong instrument, not as
+a headline.
 
-> **How to read the numbers (post-review revision).** We now lead with the honest generalisation figures: leave-template-out F1 = 0.823 ± 0.101 (cluster-bootstrap F1 in [0.79, 0.99]), malicious-class recall = 0.75 (not the 0.855 aggregate), and a default-threshold FPR ≈ 0.10 (the 0.011 is a tuned single split). Enforcement is now real (seccomp-BPF), adversarial robustness is not claimed (complementary blind spots), and online learning is not claimed as a benefit. See the paper's RQ6b–RQ10 and Threats to Validity.
+> **How to read the numbers (post-review revision).** We now lead with the honest generalisation figures: leave-template-out F1 = 0.823 ± 0.101 (cluster-bootstrap F1 in [0.79, 0.99]), malicious-class recall = 0.75 (not the 0.855 aggregate), and a default-threshold FPR ≈ 0.10 (the 0.011 is a tuned single split). Enforcement is now real (seccomp-BPF), adversarial robustness is not claimed (complementary blind spots), and online learning is not claimed as a benefit. Most importantly, RQ11 shows the low false-positive rate is a synthetic-corpus artefact: on 22 real third-party benign installers ACTE's FPR is 0.86 (vs 0.00 for TF-IDF baselines). See the paper's RQ6b–RQ11 and Threats to Validity.
 
 The headline is not a single-split artifact, and we report the unflattering
 numbers alongside the flattering ones. Five-fold cross-validation (at the fixed
@@ -60,8 +63,12 @@ frozen, ACTE clears every safe script in an **independent 41-script real-world
 holdout** (precision 1.000, FPR 0.000, ROC-AUC 0.990) but misses four evasive
 payloads, for **F1 = 0.895** (recall 0.810). Against learned TF-IDF baselines
 (logistic regression, linear SVM, random forest) ACTE is **competitive, not
-dominant**, on raw F1; its edge is the lowest false-positive rate, an interpretable
-13-feature decision, online adaptation, and the enforcement policy it emits.
+dominant**, on raw F1; its edge is an interpretable 13-feature decision and the
+enforcement policy it emits. Its in-corpus low false-positive rate does **not**
+transfer: on 22 real third-party benign installers (nvm, rustup, docker,
+Homebrew, …) ACTE flags **19/22 as risky (FPR 0.86)** while every TF-IDF baseline
+flags **0/22** — the sharpest limitation in the work, reported prominently as
+RQ11.
 
 ## Headline results
 
@@ -126,12 +133,16 @@ in the module docstring of [`acte/trust_engine.py`](acte/trust_engine.py).
 | `data/scripts/*.sh` | The 420 generated shell-script samples |
 | `data/real_world/build.py` | Builder for the 41-script real, publicly-documented external holdout |
 | `data/real_world/scripts/*.sh` | The real-world external validation scripts |
+| `data/external/fetch_external.py` | Fetch the 22-script real third-party benign corpus (RQ11) from public GitHub |
+| `data/external/manifest.jsonl` | Provenance manifest for the committed external benign corpus |
 | `data/PROVENANCE.md` | Dataset provenance and construction details |
 | `experiments/` | Metrics, figures, ablation, ShellCheck baseline, latency, `run_all` |
 | `experiments/cross_validation.py` | Stratified + leave-template-out k-fold cross-validation |
 | `experiments/stats.py` | Bootstrap confidence intervals + exact McNemar test |
 | `experiments/ml_baselines.py` | RQ5: learned TF-IDF baselines (LogReg / SVM / RF) |
 | `experiments/real_world_eval.py` | RQ4: train-synthetic / test-real external validation |
+| `experiments/external_eval.py` | RQ11: false-positive rate on the real third-party benign corpus |
+| `tools/` | Turnkey field-study harness: real LLM-script collection, dual annotation, Cohen's κ |
 | `experiments/results/results.{json,md}` | Machine- and human-readable results |
 | `experiments/figures/*.png` | ROC, PR, ablation, cross-validation, real-world, comparison plots |
 | `paper/` | The compiled paper (PDF + HTML source) and its figures |
@@ -207,21 +218,30 @@ variants, and realistic sysadmin tasks. Ground-truth labels are binary
 
 ## Limitations
 
-* The generated seccomp/Rego/namespace artifacts and the `RuntimeMonitor` are
-  **enforcement sketches**, not a live sandbox (which would require root). They
-  are emitted as inspectable data, exactly as a production deployment would hand
-  them to its enforcement layer.
+* **The low false-positive rate does not transfer (RQ11).** On 22 genuinely
+  third-party benign scripts nobody on this project wrote — the official
+  installers of nvm, rustup, docker, Homebrew, deno, k3s, uv, and others — the
+  frozen model flags **19/22 as risky (FPR 0.86)**, while every TF-IDF baseline
+  flags **0/22**. The synthetic corpus taught ACTE that `curl | bash` and `sudo`
+  signal danger; in the wild they signal a normal installer. This is the sharpest
+  limitation in the work and we report it prominently, not in a footnote.
+* Enforcement is **real but partial**: a content-derived syscall deny-set is
+  compiled to an actual seccomp-BPF filter and enforced unprivileged by the
+  kernel (RQ10), but the surrounding namespace/cgroup profile and the OPA/Rego
+  artifacts are still emitted as inspectable data rather than mounted in a live
+  container runtime.
 * The training corpus is synthetic; absolute metrics are evidence about the
   *method* on a controlled corpus, not field-deployment numbers. The
   leave-template-out cross-validation and the 41-script real-world external
-  holdout (RQ4) narrow this gap — a synthetic-trained, frozen model reaches
-  F1 = 0.895 (zero false positives) on independently authored real scripts — but
-  the corpus is author-generated, the signatures are author-written (a closed
-  loop we discuss openly in the paper's Threats to Validity), and a large-scale
-  field study with independent labelling remains essential future work.
-* There is no adaptive-attacker evaluation, and the model's monotonicity is a
-  double-edged property (it is also an evasion recipe); adversarial robustness is
-  an open problem, discussed in the paper.
+  holdout (RQ4) narrow this gap, but the corpus is author-generated, the
+  signatures are author-written (a closed loop we discuss openly in the paper's
+  Threats to Validity), and a large-scale field study with independent labelling
+  remains essential future work. A **turnkey harness for that study ships in
+  [`tools/`](tools/)**: collect real LLM-assistant outputs, have two people label
+  them independently, and compute Cohen's κ.
+* There is no adaptive-attacker evaluation beyond RQ6b, and the model's
+  monotonicity is a double-edged property (it is also an evasion recipe);
+  adversarial robustness is an open problem, discussed in the paper.
 
 ## Author
 
